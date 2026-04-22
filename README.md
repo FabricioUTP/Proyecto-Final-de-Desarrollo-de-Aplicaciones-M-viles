@@ -16,7 +16,7 @@
 
 Desarrollada con **React Native** y **Expo**, la aplicación implementa buenas prácticas en estructuración de código, diseño responsivo y organización de componentes, con un flujo de navegación claro e intuitivo.
 
-> 🎓 Proyecto desarrollado para el curso universitario de **Desarrollo de Aplicaciones Móviles** — Avance de Proyecto Final 01 (Semana 5)
+> 🎓 Proyecto desarrollado para el curso universitario de **Desarrollo de Aplicaciones Móviles**
 
 ---
 
