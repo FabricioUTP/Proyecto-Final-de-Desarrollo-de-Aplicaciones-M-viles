@@ -5,7 +5,6 @@
   <img src="https://img.shields.io/badge/React_Native-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" />
   <img src="https://img.shields.io/badge/Expo-000020?style=for-the-badge&logo=expo&logoColor=white" />
   <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" />
-  <img src="https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black" />
   <img src="https://img.shields.io/badge/VS_Code-007ACC?style=for-the-badge&logo=visual-studio-code&logoColor=white" />
 </p>
 
@@ -59,8 +58,6 @@ La paleta fue seleccionada para transmitir profesionalismo, claridad visual y bu
 | **JSX** | — | Extensión de sintaxis para la definición de interfaces |
 | **CSS-in-JS (StyleSheet)** | — | Estilos mediante la API nativa de React Native |
 | **React Navigation** | v6 | Navegación entre pantallas |
-| **Firebase** | v10+ | Backend como servicio (BaaS) — implementación futura |
-| **Firestore** | — | Base de datos NoSQL en la nube — implementación futura |
 
 ---
 
