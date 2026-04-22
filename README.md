@@ -157,8 +157,8 @@ expo --version
 ### Paso 3 — Crear el proyecto con Expo
 
 ```bash
-npx create-expo-app KronoTask
-cd KronoTask
+npx create-expo-app@latest proyectoApp
+cd proyectoApp
 ```
 
 ---
@@ -201,45 +201,6 @@ Luego elige una de las siguientes opciones en la terminal:
 | `i` | Abrir en simulador iOS (solo Mac) |
 | `w` | Abrir en navegador web |
 | Escanear QR | Visualizar en dispositivo físico con Expo Go |
-
----
-
-## 🔥 Backend y Base de Datos (Implementación futura — Avance 2 y 3)
-
-KronoTask utilizará **Firebase** como plataforma de backend y **Cloud Firestore** como base de datos NoSQL.
-
-### ¿Por qué Firebase?
-
-- Integración nativa con React Native / Expo
-- Autenticación de usuarios lista para usar (email, Google)
-- Base de datos en tiempo real y sin necesidad de servidor propio
-- Escalable y gratuito en el tier inicial
-
-### Instalación de Firebase (referencia para avances futuros)
-
-```bash
-npx expo install firebase
-```
-
-### Configuración inicial (referencia)
-
-```bash
-# Instalar Firebase CLI
-npm install -g firebase-tools
-
-# Iniciar sesión
-firebase login
-
-# Inicializar proyecto
-firebase init
-```
-
-| Servicio Firebase | Uso en KronoTask |
-|---|---|
-| **Authentication** | Login con correo/contraseña o Google |
-| **Cloud Firestore** | Almacenamiento de tareas por usuario |
-| **Firebase Hosting** | Despliegue del panel web (futuro) |
-| **Cloud Functions** | Notificaciones y lógica de servidor |
 
 ---
 
