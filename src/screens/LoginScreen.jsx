@@ -1,36 +1,32 @@
 // src/screens/LoginScreen.jsx
 
-import React, { useState, useRef } from 'react';
+import { useRef, useState } from "react";
 import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
+  Animated,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Animated,
   StatusBar,
-  Dimensions,
-} from 'react-native';
-import { colors } from '../theme/colors';
-
-const { width } = Dimensions.get('window');
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { colors } from "../theme/colors";
 
 // ── Credenciales temporales (se reemplazarán por Firebase en Avance 2) ──
-const TEMP_EMAIL    = 'admin@kronotask.com';
-const TEMP_PASSWORD = 'admin123';
+const TEMP_EMAIL = "admin@kronotask.com";
+const TEMP_PASSWORD = "admin123";
 
 const LoginScreen = ({ navigation }) => {
-
-  const [email,     setEmail]     = useState('');
-  const [password,  setPassword]  = useState('');
-  const [showPass,  setShowPass]  = useState(false);
-  const [errors,    setErrors]    = useState({});
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPass, setShowPass] = useState(false);
+  const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
-  const shakeAnim   = useRef(new Animated.Value(0)).current;
+  const shakeAnim = useRef(new Animated.Value(0)).current;
   const buttonScale = useRef(new Animated.Value(1)).current;
 
   // ── Validaciones ───────────────────────────────────────
@@ -38,19 +34,19 @@ const LoginScreen = ({ navigation }) => {
     const newErrors = {};
 
     if (!email.trim()) {
-      newErrors.email = 'El correo es obligatorio.';
+      newErrors.email = "El correo es obligatorio.";
     } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = 'Ingresa un correo corporativo válido.';
+      newErrors.email = "Ingresa un correo corporativo válido.";
     } else if (email.trim() !== TEMP_EMAIL) {
-      newErrors.email = 'Correo no registrado en el sistema.';
+      newErrors.email = "Correo no registrado en el sistema.";
     }
 
     if (!password.trim()) {
-      newErrors.password = 'La contraseña es obligatoria.';
+      newErrors.password = "La contraseña es obligatoria.";
     } else if (password.length < 6) {
-      newErrors.password = 'Debe tener al menos 6 caracteres.';
+      newErrors.password = "Debe tener al menos 6 caracteres.";
     } else if (password !== TEMP_PASSWORD) {
-      newErrors.password = 'Contraseña incorrecta.';
+      newErrors.password = "Contraseña incorrecta.";
     }
 
     setErrors(newErrors);
@@ -60,19 +56,47 @@ const LoginScreen = ({ navigation }) => {
   // ── Shake al error ─────────────────────────────────────
   const triggerShake = () => {
     Animated.sequence([
-      Animated.timing(shakeAnim, { toValue: 10,  duration: 60, useNativeDriver: true }),
-      Animated.timing(shakeAnim, { toValue: -10, duration: 60, useNativeDriver: true }),
-      Animated.timing(shakeAnim, { toValue: 6,   duration: 60, useNativeDriver: true }),
-      Animated.timing(shakeAnim, { toValue: -6,  duration: 60, useNativeDriver: true }),
-      Animated.timing(shakeAnim, { toValue: 0,   duration: 60, useNativeDriver: true }),
+      Animated.timing(shakeAnim, {
+        toValue: 10,
+        duration: 60,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnim, {
+        toValue: -10,
+        duration: 60,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnim, {
+        toValue: 6,
+        duration: 60,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnim, {
+        toValue: -6,
+        duration: 60,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnim, {
+        toValue: 0,
+        duration: 60,
+        useNativeDriver: true,
+      }),
     ]).start();
   };
 
   // ── Animación botón ────────────────────────────────────
   const animatePress = (callback) => {
     Animated.sequence([
-      Animated.timing(buttonScale, { toValue: 0.96, duration: 80, useNativeDriver: true }),
-      Animated.timing(buttonScale, { toValue: 1,    duration: 80, useNativeDriver: true }),
+      Animated.timing(buttonScale, {
+        toValue: 0.96,
+        duration: 80,
+        useNativeDriver: true,
+      }),
+      Animated.timing(buttonScale, {
+        toValue: 1,
+        duration: 80,
+        useNativeDriver: true,
+      }),
     ]).start(callback);
   };
 
@@ -83,7 +107,7 @@ const LoginScreen = ({ navigation }) => {
         setIsLoading(true);
         setTimeout(() => {
           setIsLoading(false);
-          navigation.replace('Home');
+          navigation.replace("Home");
         }, 1200);
       } else {
         triggerShake();
@@ -91,14 +115,13 @@ const LoginScreen = ({ navigation }) => {
     });
   };
 
-  const clearError = (field) =>
-    setErrors((prev) => ({ ...prev, [field]: '' }));
+  const clearError = (field) => setErrors((prev) => ({ ...prev, [field]: "" }));
 
   // ──────────────────────────────────────────────────────
   return (
     <KeyboardAvoidingView
       style={styles.root}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <StatusBar barStyle="light-content" backgroundColor={colors.primary} />
 
@@ -107,7 +130,6 @@ const LoginScreen = ({ navigation }) => {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-
         {/* ── HERO ──────────────────────────────────── */}
         <View style={styles.hero}>
           <View style={styles.circleLarge} />
@@ -122,10 +144,7 @@ const LoginScreen = ({ navigation }) => {
 
         {/* ── FORMULARIO ────────────────────────────── */}
         <Animated.View
-          style={[
-            styles.card,
-            { transform: [{ translateX: shakeAnim }] },
-          ]}
+          style={[styles.card, { transform: [{ translateX: shakeAnim }] }]}
         >
           {/* Título centrado */}
           <Text style={styles.cardTitle}>Iniciar sesión</Text>
@@ -136,7 +155,9 @@ const LoginScreen = ({ navigation }) => {
           {/* Campo: correo */}
           <View style={styles.fieldWrapper}>
             <Text style={styles.label}>Correo corporativo</Text>
-            <View style={[styles.inputRow, errors.email && styles.inputRowError]}>
+            <View
+              style={[styles.inputRow, errors.email && styles.inputRowError]}
+            >
               <Text style={styles.inputIcon}>✉️</Text>
               <TextInput
                 style={styles.input}
@@ -146,19 +167,24 @@ const LoginScreen = ({ navigation }) => {
                 autoCapitalize="none"
                 autoCorrect={false}
                 value={email}
-                onChangeText={(t) => { setEmail(t); clearError('email'); }}
+                onChangeText={(t) => {
+                  setEmail(t);
+                  clearError("email");
+                }}
                 returnKeyType="next"
               />
             </View>
-            {errors.email
-              ? <Text style={styles.errorText}>⚠ {errors.email}</Text>
-              : null}
+            {errors.email ? (
+              <Text style={styles.errorText}>⚠ {errors.email}</Text>
+            ) : null}
           </View>
 
           {/* Campo: contraseña */}
           <View style={styles.fieldWrapper}>
             <Text style={styles.label}>Contraseña</Text>
-            <View style={[styles.inputRow, errors.password && styles.inputRowError]}>
+            <View
+              style={[styles.inputRow, errors.password && styles.inputRowError]}
+            >
               <Text style={styles.inputIcon}>🔒</Text>
               <TextInput
                 style={styles.input}
@@ -166,7 +192,10 @@ const LoginScreen = ({ navigation }) => {
                 placeholderTextColor={colors.textSecondary}
                 secureTextEntry={!showPass}
                 value={password}
-                onChangeText={(t) => { setPassword(t); clearError('password'); }}
+                onChangeText={(t) => {
+                  setPassword(t);
+                  clearError("password");
+                }}
                 returnKeyType="done"
                 onSubmitEditing={handleLogin}
               />
@@ -174,12 +203,12 @@ const LoginScreen = ({ navigation }) => {
                 onPress={() => setShowPass(!showPass)}
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               >
-                <Text style={styles.eyeIcon}>{showPass ? '🙈' : '👁️'}</Text>
+                <Text style={styles.eyeIcon}>{showPass ? "🙈" : "👁️"}</Text>
               </TouchableOpacity>
             </View>
-            {errors.password
-              ? <Text style={styles.errorText}>⚠ {errors.password}</Text>
-              : null}
+            {errors.password ? (
+              <Text style={styles.errorText}>⚠ {errors.password}</Text>
+            ) : null}
           </View>
 
           {/* Botón principal */}
@@ -191,15 +220,18 @@ const LoginScreen = ({ navigation }) => {
               activeOpacity={0.9}
             >
               <Text style={styles.btnPrimaryText}>
-                {isLoading ? 'Verificando...' : 'Ingresar →'}
+                {isLoading ? "Verificando..." : "Ingresar →"}
               </Text>
             </TouchableOpacity>
           </Animated.View>
 
-          {/* Crear cuenta (sin funcionalidad aún) */}
+          {/* Crear cuenta */}
           <View style={styles.registerRow}>
             <Text style={styles.registerText}>¿No tienes una cuenta? </Text>
-            <TouchableOpacity disabled>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("CreateAccount")}
+              activeOpacity={0.8}
+            >
               <Text style={styles.registerLink}>Crear una cuenta</Text>
             </TouchableOpacity>
           </View>
@@ -229,7 +261,6 @@ const LoginScreen = ({ navigation }) => {
         <Text style={styles.footer}>
           © 2026 KronoTask · Todos los derechos reservados
         </Text>
-
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -237,7 +268,6 @@ const LoginScreen = ({ navigation }) => {
 
 // ── ESTILOS ──────────────────────────────────────────────
 const styles = StyleSheet.create({
-
   root: {
     flex: 1,
     backgroundColor: colors.background,
@@ -253,12 +283,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
     paddingTop: 64,
     paddingBottom: 56,
-    alignItems: 'center',
-    overflow: 'hidden',
+    alignItems: "center",
+    overflow: "hidden",
   },
 
   circleLarge: {
-    position: 'absolute',
+    position: "absolute",
     width: 260,
     height: 260,
     borderRadius: 130,
@@ -269,7 +299,7 @@ const styles = StyleSheet.create({
   },
 
   circleSmall: {
-    position: 'absolute',
+    position: "absolute",
     width: 140,
     height: 140,
     borderRadius: 70,
@@ -283,31 +313,31 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 24,
-    backgroundColor: 'rgba(255,255,255,0.15)',
+    backgroundColor: "rgba(255,255,255,0.15)",
     borderWidth: 2,
-    borderColor: 'rgba(255,255,255,0.3)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    borderColor: "rgba(255,255,255,0.3)",
+    justifyContent: "center",
+    alignItems: "center",
     marginBottom: 16,
   },
 
   logoLetter: {
     fontSize: 42,
-    fontWeight: '900',
-    color: '#FFFFFF',
+    fontWeight: "900",
+    color: "#FFFFFF",
     letterSpacing: -1,
   },
 
   appName: {
     fontSize: 30,
-    fontWeight: '800',
-    color: '#FFFFFF',
+    fontWeight: "800",
+    color: "#FFFFFF",
     letterSpacing: 1.5,
   },
 
   appTagline: {
     fontSize: 13,
-    color: 'rgba(255,255,255,0.75)',
+    color: "rgba(255,255,255,0.75)",
     marginTop: 6,
     letterSpacing: 0.5,
   },
@@ -320,7 +350,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 28,
     elevation: 8,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.12,
     shadowRadius: 16,
@@ -329,10 +359,10 @@ const styles = StyleSheet.create({
   // Título centrado ✅
   cardTitle: {
     fontSize: 22,
-    fontWeight: '800',
+    fontWeight: "800",
     color: colors.textPrimary,
     marginBottom: 4,
-    textAlign: 'center',
+    textAlign: "center",
   },
 
   // Subtítulo centrado ✅
@@ -340,7 +370,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: colors.textSecondary,
     marginBottom: 28,
-    textAlign: 'center',
+    textAlign: "center",
   },
 
   // ── Campos ───────────────────────────────────────────
@@ -350,25 +380,25 @@ const styles = StyleSheet.create({
 
   label: {
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.textPrimary,
     marginBottom: 8,
   },
 
   inputRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     borderWidth: 1.5,
     borderColor: colors.border,
     borderRadius: 12,
     backgroundColor: colors.background,
     paddingHorizontal: 14,
-    paddingVertical: Platform.OS === 'ios' ? 14 : 0,
+    paddingVertical: Platform.OS === "ios" ? 14 : 0,
   },
 
   inputRowError: {
     borderColor: colors.danger,
-    backgroundColor: '#FFF5F5',
+    backgroundColor: "#FFF5F5",
   },
 
   inputIcon: {
@@ -380,7 +410,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 15,
     color: colors.textPrimary,
-    paddingVertical: Platform.OS === 'android' ? 12 : 0,
+    paddingVertical: Platform.OS === "android" ? 12 : 0,
   },
 
   eyeIcon: {
@@ -392,7 +422,7 @@ const styles = StyleSheet.create({
     color: colors.danger,
     fontSize: 12,
     marginTop: 6,
-    fontWeight: '500',
+    fontWeight: "500",
   },
 
   // ── Botón ────────────────────────────────────────────
@@ -400,7 +430,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
     paddingVertical: 16,
     borderRadius: 14,
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 8,
     elevation: 4,
     shadowColor: colors.primary,
@@ -416,17 +446,17 @@ const styles = StyleSheet.create({
   },
 
   btnPrimaryText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: "700",
     letterSpacing: 0.5,
   },
 
   // ── Crear cuenta ─────────────────────────────────────
   registerRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: 18,
   },
 
@@ -438,13 +468,13 @@ const styles = StyleSheet.create({
   registerLink: {
     fontSize: 13,
     color: colors.primary,
-    fontWeight: '700',
+    fontWeight: "700",
   },
 
   // ── Divider ──────────────────────────────────────────
   divider: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginVertical: 24,
     gap: 10,
   },
@@ -458,16 +488,16 @@ const styles = StyleSheet.create({
   dividerText: {
     fontSize: 11,
     color: colors.textSecondary,
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
     letterSpacing: 1,
   },
 
   // ── Chips ────────────────────────────────────────────
   chipsRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     gap: 8,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
 
   chip: {
@@ -476,24 +506,23 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#C7D2FE',
+    borderColor: "#C7D2FE",
   },
 
   chipText: {
     fontSize: 11,
     color: colors.primary,
-    fontWeight: '600',
+    fontWeight: "600",
   },
 
   // ── Footer ───────────────────────────────────────────
   footer: {
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 11,
     color: colors.textSecondary,
     marginTop: 28,
     letterSpacing: 0.3,
   },
-
 });
 
 export default LoginScreen;

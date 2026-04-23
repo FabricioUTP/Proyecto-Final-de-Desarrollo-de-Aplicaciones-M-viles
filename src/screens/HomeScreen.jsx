@@ -1,132 +1,75 @@
 // src/screens/HomeScreen.jsx
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useEffect, useRef } from "react";
 import {
-  View,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  StyleSheet,
-  Animated,
-  StatusBar,
-  Dimensions,
-  Image,
-  Platform,
-} from 'react-native';
-import { colors } from '../theme/colors';
-import TaskCard from '../components/TaskCard';
+    Animated,
+    Dimensions,
+    FlatList,
+    Platform,
+    StatusBar,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+} from "react-native";
+import TaskCard from "../components/TaskCard";
+import { useTasks } from "../context/TaskContext";
+import { colors } from "../theme/colors";
 
-const { width } = Dimensions.get('window');
-
-// ── Datos iniciales de muestra ────────────────────────────
-const INITIAL_TASKS = [
-  {
-    id: '1',
-    title: 'Revisar propuesta comercial',
-    description: 'Validar los términos del contrato con el cliente Acme Corp antes de la reunión del viernes.',
-    status: 'pending',
-    priority: 'high',
-    category: 'Comercial',
-    createdAt: '22 Abr 2025',
-  },
-  {
-    id: '2',
-    title: 'Reunión con equipo de diseño',
-    description: 'Alinear wireframes para el nuevo módulo de reportes del dashboard empresarial.',
-    status: 'completed',
-    priority: 'medium',
-    category: 'Diseño',
-    createdAt: '21 Abr 2025',
-  },
-  {
-    id: '3',
-    title: 'Actualizar documentación técnica',
-    description: 'Completar el README del proyecto backend con los nuevos endpoints de la API v2.',
-    status: 'pending',
-    priority: 'low',
-    category: 'Desarrollo',
-    createdAt: '20 Abr 2025',
-  },
-  {
-    id: '4',
-    title: 'Informe mensual de métricas',
-    description: 'Consolidar los KPIs del mes de marzo y preparar el resumen ejecutivo para gerencia.',
-    status: 'pending',
-    priority: 'high',
-    category: 'Gestión',
-    createdAt: '19 Abr 2025',
-  },
-  {
-    id: '5',
-    title: 'Configurar entorno de staging',
-    description: 'Preparar el servidor de pruebas para el despliegue de la versión 2.1 del sistema.',
-    status: 'completed',
-    priority: 'medium',
-    category: 'Desarrollo',
-    createdAt: '18 Abr 2025',
-  },
-];
+const { width } = Dimensions.get("window");
 
 // ── Configuración de filtros ──────────────────────────────
 const FILTERS = [
-  { key: 'all',       label: 'Todas'       },
-  { key: 'pending',   label: 'Pendientes'  },
-  { key: 'completed', label: 'Completadas' },
+  { key: "all", label: "Todas" },
+  { key: "pending", label: "Pendientes" },
+  { key: "completed", label: "Completadas" },
 ];
 
 // ── Etiquetas de prioridad ────────────────────────────────
 const PRIORITY_CONFIG = {
-  high:   { label: 'Alta',   color: colors.priorityHigh, bg: '#FEE2E2' },
-  medium: { label: 'Media',  color: colors.priorityMed,  bg: '#FEF3C7' },
-  low:    { label: 'Baja',   color: colors.priorityLow,  bg: colors.secondaryLight },
+  high: { label: "Alta", color: colors.priorityHigh, bg: "#FEE2E2" },
+  medium: { label: "Media", color: colors.priorityMed, bg: "#FEF3C7" },
+  low: { label: "Baja", color: colors.priorityLow, bg: colors.secondaryLight },
 };
 
 // ─────────────────────────────────────────────────────────
 const HomeScreen = ({ navigation }) => {
-
-  const [tasks,  setTasks]  = useState(INITIAL_TASKS);
-  const [filter, setFilter] = useState('all');
+  const { tasks, toggleTaskStatus } = useTasks();
+  const [filter, setFilter] = React.useState("all");
 
   // Animación de entrada del header
   const headerAnim = useRef(new Animated.Value(0)).current;
-  const fabAnim    = useRef(new Animated.Value(0)).current;
+  const fabAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     Animated.parallel([
       Animated.timing(headerAnim, {
-        toValue: 1, duration: 500, useNativeDriver: true,
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
       }),
       Animated.timing(fabAnim, {
-        toValue: 1, duration: 600, delay: 300, useNativeDriver: true,
+        toValue: 1,
+        duration: 600,
+        delay: 300,
+        useNativeDriver: true,
       }),
     ]).start();
   }, []);
 
   // ── Lógica de filtrado ──────────────────────────────────
   const filteredTasks = tasks.filter((t) => {
-    if (filter === 'pending')   return t.status === 'pending';
-    if (filter === 'completed') return t.status === 'completed';
+    if (filter === "pending") return t.status === "pending";
+    if (filter === "completed") return t.status === "completed";
     return true;
   });
 
   // ── Estadísticas ────────────────────────────────────────
-  const totalTasks     = tasks.length;
-  const completedTasks = tasks.filter((t) => t.status === 'completed').length;
-  const pendingTasks   = tasks.filter((t) => t.status === 'pending').length;
-  const progressPct    = totalTasks > 0
-    ? Math.round((completedTasks / totalTasks) * 100)
-    : 0;
-
-  // ── Cambiar estado de tarea ─────────────────────────────
-  const toggleTaskStatus = (id) => {
-    setTasks((prev) =>
-      prev.map((t) =>
-        t.id === id
-          ? { ...t, status: t.status === 'completed' ? 'pending' : 'completed' }
-          : t
-      )
-    );
-  };
+  const totalTasks = tasks.length;
+  const completedTasks = tasks.filter((t) => t.status === "completed").length;
+  const pendingTasks = tasks.filter((t) => t.status === "pending").length;
+  const progressPct =
+    totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
   // ── Barra de progreso animada ───────────────────────────
   const progressAnim = useRef(new Animated.Value(0)).current;
@@ -139,16 +82,16 @@ const HomeScreen = ({ navigation }) => {
   }, [progressPct]);
 
   const progressWidth = progressAnim.interpolate({
-    inputRange:  [0, 1],
-    outputRange: ['0%', '100%'],
+    inputRange: [0, 1],
+    outputRange: ["0%", "100%"],
   });
 
   // ── Hora del saludo ─────────────────────────────────────
   const getGreeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return '☀️  Buenos días';
-    if (hour < 18) return '🌤️  Buenas tardes';
-    return '🌙  Buenas noches';
+    if (hour < 12) return "☀️  Buenos días";
+    if (hour < 18) return "🌤️  Buenas tardes";
+    return "🌙  Buenas noches";
   };
 
   // ── Componente: Header con estadísticas ─────────────────
@@ -158,12 +101,14 @@ const HomeScreen = ({ navigation }) => {
         styles.headerContainer,
         {
           opacity: headerAnim,
-          transform: [{
-            translateY: headerAnim.interpolate({
-              inputRange:  [0, 1],
-              outputRange: [-20, 0],
-            }),
-          }],
+          transform: [
+            {
+              translateY: headerAnim.interpolate({
+                inputRange: [0, 1],
+                outputRange: [-20, 0],
+              }),
+            },
+          ],
         },
       ]}
     >
@@ -177,8 +122,10 @@ const HomeScreen = ({ navigation }) => {
           <Text style={styles.greeting}>{getGreeting()}</Text>
           <Text style={styles.headerTitle}>Mis Tareas</Text>
           <Text style={styles.headerDate}>
-            {new Date().toLocaleDateString('es-PE', {
-              weekday: 'long', day: 'numeric', month: 'long',
+            {new Date().toLocaleDateString("es-PE", {
+              weekday: "long",
+              day: "numeric",
+              month: "long",
             })}
           </Text>
         </View>
@@ -195,7 +142,9 @@ const HomeScreen = ({ navigation }) => {
           <Text style={styles.statNumber}>{totalTasks}</Text>
           <Text style={styles.statLabel}>Total</Text>
         </View>
-        <View style={[styles.statCard, { borderLeftColor: colors.priorityHigh }]}>
+        <View
+          style={[styles.statCard, { borderLeftColor: colors.priorityHigh }]}
+        >
           <Text style={[styles.statNumber, { color: colors.priorityHigh }]}>
             {pendingTasks}
           </Text>
@@ -237,10 +186,7 @@ const HomeScreen = ({ navigation }) => {
       {FILTERS.map((f) => (
         <TouchableOpacity
           key={f.key}
-          style={[
-            styles.filterBtn,
-            filter === f.key && styles.filterBtnActive,
-          ]}
+          style={[styles.filterBtn, filter === f.key && styles.filterBtnActive]}
           onPress={() => setFilter(f.key)}
           activeOpacity={0.8}
         >
@@ -252,9 +198,7 @@ const HomeScreen = ({ navigation }) => {
           >
             {f.label}
           </Text>
-          {filter === f.key && (
-            <View style={styles.filterDot} />
-          )}
+          {filter === f.key && <View style={styles.filterDot} />}
         </TouchableOpacity>
       ))}
     </View>
@@ -266,7 +210,7 @@ const HomeScreen = ({ navigation }) => {
       <Text style={styles.emptyIcon}>📭</Text>
       <Text style={styles.emptyTitle}>Sin tareas aquí</Text>
       <Text style={styles.emptySubtitle}>
-        No hay tareas en esta categoría.{'\n'}
+        No hay tareas en esta categoría.{"\n"}
         ¡Crea una nueva con el botón +!
       </Text>
     </View>
@@ -283,7 +227,6 @@ const HomeScreen = ({ navigation }) => {
       <FlatList
         data={filteredTasks}
         keyExtractor={(item) => item.id}
-
         // Header y filtros dentro del scroll
         ListHeaderComponent={
           <>
@@ -291,10 +234,12 @@ const HomeScreen = ({ navigation }) => {
             <View style={styles.listSection}>
               {renderFilters()}
               <Text style={styles.sectionTitle}>
-                {filter === 'all'       ? 'Todas las tareas'    :
-                 filter === 'pending'   ? 'Tareas pendientes'   :
-                                         'Tareas completadas'}
-                {'  '}
+                {filter === "all"
+                  ? "Todas las tareas"
+                  : filter === "pending"
+                    ? "Tareas pendientes"
+                    : "Tareas completadas"}
+                {"  "}
                 <Text style={styles.sectionCount}>
                   ({filteredTasks.length})
                 </Text>
@@ -302,23 +247,19 @@ const HomeScreen = ({ navigation }) => {
             </View>
           </>
         }
-
         renderItem={({ item, index }) => (
           <TaskCard
             task={item}
             priorityConfig={PRIORITY_CONFIG}
             onPress={() =>
-              navigation.navigate('TaskDetail', {
+              navigation.navigate("TaskDetail", {
                 taskId: item.id,
-                tasks,
-                setTasks,
               })
             }
             onToggle={() => toggleTaskStatus(item.id)}
             index={index}
           />
         )}
-
         ItemSeparatorComponent={renderSeparator}
         ListEmptyComponent={renderEmpty}
         contentContainerStyle={styles.listContent}
@@ -331,34 +272,32 @@ const HomeScreen = ({ navigation }) => {
           styles.fabWrapper,
           {
             opacity: fabAnim,
-            transform: [{
-              scale: fabAnim.interpolate({
-                inputRange:  [0, 1],
-                outputRange: [0.5, 1],
-              }),
-            }],
+            transform: [
+              {
+                scale: fabAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [0.5, 1],
+                }),
+              },
+            ],
           },
         ]}
       >
         <TouchableOpacity
           style={styles.fab}
-          onPress={() =>
-            navigation.navigate('CreateTask', { tasks, setTasks })
-          }
+          onPress={() => navigation.navigate("CreateTask")}
           activeOpacity={0.85}
         >
           <Text style={styles.fabIcon}>＋</Text>
         </TouchableOpacity>
         <Text style={styles.fabLabel}>Nueva tarea</Text>
       </Animated.View>
-
     </View>
   );
 };
 
 // ── ESTILOS ───────────────────────────────────────────────
 const styles = StyleSheet.create({
-
   root: {
     flex: 1,
     backgroundColor: colors.background,
@@ -367,14 +306,14 @@ const styles = StyleSheet.create({
   // ── Header ──────────────────────────────────────────────
   headerContainer: {
     backgroundColor: colors.primary,
-    paddingTop: Platform.OS === 'android' ? 48 : 56,
+    paddingTop: Platform.OS === "android" ? 48 : 56,
     paddingHorizontal: 24,
     paddingBottom: 28,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
 
   decorCircle1: {
-    position: 'absolute',
+    position: "absolute",
     width: 220,
     height: 220,
     borderRadius: 110,
@@ -385,7 +324,7 @@ const styles = StyleSheet.create({
   },
 
   decorCircle2: {
-    position: 'absolute',
+    position: "absolute",
     width: 100,
     height: 100,
     borderRadius: 50,
@@ -396,60 +335,60 @@ const styles = StyleSheet.create({
   },
 
   headerTop: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
     marginBottom: 24,
   },
 
   greeting: {
     fontSize: 13,
-    color: 'rgba(255,255,255,0.8)',
+    color: "rgba(255,255,255,0.8)",
     letterSpacing: 0.4,
     marginBottom: 4,
   },
 
   headerTitle: {
     fontSize: 28,
-    fontWeight: '900',
-    color: '#FFFFFF',
+    fontWeight: "900",
+    color: "#FFFFFF",
     letterSpacing: 0.5,
   },
 
   headerDate: {
     fontSize: 12,
-    color: 'rgba(255,255,255,0.65)',
+    color: "rgba(255,255,255,0.65)",
     marginTop: 4,
-    textTransform: 'capitalize',
+    textTransform: "capitalize",
   },
 
   avatarWrapper: {
     width: 48,
     height: 48,
     borderRadius: 16,
-    backgroundColor: 'rgba(255,255,255,0.18)',
+    backgroundColor: "rgba(255,255,255,0.18)",
     borderWidth: 1.5,
-    borderColor: 'rgba(255,255,255,0.3)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    borderColor: "rgba(255,255,255,0.3)",
+    justifyContent: "center",
+    alignItems: "center",
   },
 
   avatarText: {
     fontSize: 22,
-    fontWeight: '900',
-    color: '#FFFFFF',
+    fontWeight: "900",
+    color: "#FFFFFF",
   },
 
   // ── Estadísticas ─────────────────────────────────────────
   statsRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 10,
     marginBottom: 20,
   },
 
   statCard: {
     flex: 1,
-    backgroundColor: 'rgba(255,255,255,0.12)',
+    backgroundColor: "rgba(255,255,255,0.12)",
     borderRadius: 12,
     padding: 12,
     borderLeftWidth: 3,
@@ -457,16 +396,16 @@ const styles = StyleSheet.create({
 
   statNumber: {
     fontSize: 24,
-    fontWeight: '900',
-    color: '#FFFFFF',
+    fontWeight: "900",
+    color: "#FFFFFF",
   },
 
   statLabel: {
     fontSize: 10,
-    color: 'rgba(255,255,255,0.7)',
+    color: "rgba(255,255,255,0.7)",
     marginTop: 2,
-    fontWeight: '500',
-    textTransform: 'uppercase',
+    fontWeight: "500",
+    textTransform: "uppercase",
     letterSpacing: 0.5,
   },
 
@@ -476,28 +415,28 @@ const styles = StyleSheet.create({
   },
 
   progressLabelRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 8,
   },
 
   progressLabel: {
     fontSize: 12,
-    color: 'rgba(255,255,255,0.8)',
-    fontWeight: '500',
+    color: "rgba(255,255,255,0.8)",
+    fontWeight: "500",
   },
 
   progressPct: {
     fontSize: 12,
-    color: '#FFFFFF',
-    fontWeight: '700',
+    color: "#FFFFFF",
+    fontWeight: "700",
   },
 
   progressTrack: {
     height: 6,
-    backgroundColor: 'rgba(255,255,255,0.2)',
+    backgroundColor: "rgba(255,255,255,0.2)",
     borderRadius: 3,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
 
   progressFill: {
@@ -514,7 +453,7 @@ const styles = StyleSheet.create({
 
   sectionTitle: {
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: "700",
     color: colors.textPrimary,
     marginTop: 16,
     marginBottom: 4,
@@ -522,13 +461,13 @@ const styles = StyleSheet.create({
 
   sectionCount: {
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
     color: colors.textSecondary,
   },
 
   // ── Filtros ──────────────────────────────────────────────
   filtersWrapper: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 8,
   },
 
@@ -539,7 +478,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderWidth: 1.5,
     borderColor: colors.border,
-    alignItems: 'center',
+    alignItems: "center",
   },
 
   filterBtnActive: {
@@ -549,19 +488,19 @@ const styles = StyleSheet.create({
 
   filterText: {
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.textSecondary,
   },
 
   filterTextActive: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
   },
 
   filterDot: {
     width: 4,
     height: 4,
     borderRadius: 2,
-    backgroundColor: 'rgba(255,255,255,0.7)',
+    backgroundColor: "rgba(255,255,255,0.7)",
     marginTop: 3,
   },
 
@@ -572,7 +511,7 @@ const styles = StyleSheet.create({
 
   // ── Estado vacío ─────────────────────────────────────────
   emptyWrapper: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: 60,
     paddingHorizontal: 40,
   },
@@ -584,7 +523,7 @@ const styles = StyleSheet.create({
 
   emptyTitle: {
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: "700",
     color: colors.textPrimary,
     marginBottom: 8,
   },
@@ -592,16 +531,16 @@ const styles = StyleSheet.create({
   emptySubtitle: {
     fontSize: 14,
     color: colors.textSecondary,
-    textAlign: 'center',
+    textAlign: "center",
     lineHeight: 22,
   },
 
   // ── FAB ──────────────────────────────────────────────────
   fabWrapper: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 28,
     right: 22,
-    alignItems: 'center',
+    alignItems: "center",
   },
 
   fab: {
@@ -609,8 +548,8 @@ const styles = StyleSheet.create({
     height: 60,
     borderRadius: 20,
     backgroundColor: colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     elevation: 8,
     shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 6 },
@@ -620,18 +559,17 @@ const styles = StyleSheet.create({
 
   fabIcon: {
     fontSize: 30,
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     lineHeight: 34,
   },
 
   fabLabel: {
     fontSize: 10,
     color: colors.textSecondary,
-    fontWeight: '600',
+    fontWeight: "600",
     marginTop: 5,
     letterSpacing: 0.3,
   },
-
 });
 
 export default HomeScreen;
