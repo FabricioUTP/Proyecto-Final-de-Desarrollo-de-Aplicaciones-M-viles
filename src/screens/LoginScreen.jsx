@@ -1,5 +1,3 @@
-// src/screens/LoginScreen.jsx
-
 import { useRef, useState } from "react";
 import {
   Animated,
@@ -15,7 +13,6 @@ import {
 } from "react-native";
 import { colors } from "../theme/colors";
 
-// ── Credenciales temporales (se reemplazarán por Firebase en Avance 2) ──
 const TEMP_EMAIL = "admin@kronotask.com";
 const TEMP_PASSWORD = "admin123";
 
@@ -29,7 +26,6 @@ const LoginScreen = ({ navigation }) => {
   const shakeAnim = useRef(new Animated.Value(0)).current;
   const buttonScale = useRef(new Animated.Value(1)).current;
 
-  // ── Validaciones ───────────────────────────────────────
   const validate = () => {
     const newErrors = {};
 
@@ -53,7 +49,6 @@ const LoginScreen = ({ navigation }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // ── Shake al error ─────────────────────────────────────
   const triggerShake = () => {
     Animated.sequence([
       Animated.timing(shakeAnim, {
@@ -84,7 +79,6 @@ const LoginScreen = ({ navigation }) => {
     ]).start();
   };
 
-  // ── Animación botón ────────────────────────────────────
   const animatePress = (callback) => {
     Animated.sequence([
       Animated.timing(buttonScale, {
@@ -100,7 +94,6 @@ const LoginScreen = ({ navigation }) => {
     ]).start(callback);
   };
 
-  // ── Login ──────────────────────────────────────────────
   const handleLogin = () => {
     animatePress(() => {
       if (validate()) {
@@ -117,7 +110,6 @@ const LoginScreen = ({ navigation }) => {
 
   const clearError = (field) => setErrors((prev) => ({ ...prev, [field]: "" }));
 
-  // ──────────────────────────────────────────────────────
   return (
     <KeyboardAvoidingView
       style={styles.root}
@@ -266,7 +258,6 @@ const LoginScreen = ({ navigation }) => {
   );
 };
 
-// ── ESTILOS ──────────────────────────────────────────────
 const styles = StyleSheet.create({
   root: {
     flex: 1,
@@ -278,7 +269,6 @@ const styles = StyleSheet.create({
     paddingBottom: 32,
   },
 
-  // ── Hero ─────────────────────────────────────────────
   hero: {
     backgroundColor: colors.primary,
     paddingTop: 64,
@@ -342,7 +332,6 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
 
-  // ── Card ─────────────────────────────────────────────
   card: {
     backgroundColor: colors.surface,
     marginHorizontal: 20,
@@ -356,7 +345,6 @@ const styles = StyleSheet.create({
     shadowRadius: 16,
   },
 
-  // Título centrado ✅
   cardTitle: {
     fontSize: 22,
     fontWeight: "800",
@@ -365,7 +353,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 
-  // Subtítulo centrado ✅
   cardSubtitle: {
     fontSize: 13,
     color: colors.textSecondary,
@@ -373,7 +360,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 
-  // ── Campos ───────────────────────────────────────────
   fieldWrapper: {
     marginBottom: 18,
   },
@@ -425,7 +411,6 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
 
-  // ── Botón ────────────────────────────────────────────
   btnPrimary: {
     backgroundColor: colors.primary,
     paddingVertical: 16,
@@ -452,7 +437,6 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
 
-  // ── Crear cuenta ─────────────────────────────────────
   registerRow: {
     flexDirection: "row",
     justifyContent: "center",
@@ -471,7 +455,6 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
 
-  // ── Divider ──────────────────────────────────────────
   divider: {
     flexDirection: "row",
     alignItems: "center",
@@ -492,7 +475,6 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
 
-  // ── Chips ────────────────────────────────────────────
   chipsRow: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -515,7 +497,6 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 
-  // ── Footer ───────────────────────────────────────────
   footer: {
     textAlign: "center",
     fontSize: 11,

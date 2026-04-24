@@ -1,5 +1,3 @@
-// src/screens/HomeScreen.jsx
-
 import React, { useEffect, useRef } from "react";
 import {
     Animated,
@@ -18,26 +16,22 @@ import { colors } from "../theme/colors";
 
 const { width } = Dimensions.get("window");
 
-// ── Configuración de filtros ──────────────────────────────
 const FILTERS = [
   { key: "all", label: "Todas" },
   { key: "pending", label: "Pendientes" },
   { key: "completed", label: "Completadas" },
 ];
 
-// ── Etiquetas de prioridad ────────────────────────────────
 const PRIORITY_CONFIG = {
   high: { label: "Alta", color: colors.priorityHigh, bg: "#FEE2E2" },
   medium: { label: "Media", color: colors.priorityMed, bg: "#FEF3C7" },
   low: { label: "Baja", color: colors.priorityLow, bg: colors.secondaryLight },
 };
 
-// ─────────────────────────────────────────────────────────
 const HomeScreen = ({ navigation }) => {
   const { tasks, toggleTaskStatus } = useTasks();
   const [filter, setFilter] = React.useState("all");
 
-  // Animación de entrada del header
   const headerAnim = useRef(new Animated.Value(0)).current;
   const fabAnim = useRef(new Animated.Value(0)).current;
 
@@ -57,21 +51,18 @@ const HomeScreen = ({ navigation }) => {
     ]).start();
   }, []);
 
-  // ── Lógica de filtrado ──────────────────────────────────
   const filteredTasks = tasks.filter((t) => {
     if (filter === "pending") return t.status === "pending";
     if (filter === "completed") return t.status === "completed";
     return true;
   });
 
-  // ── Estadísticas ────────────────────────────────────────
   const totalTasks = tasks.length;
   const completedTasks = tasks.filter((t) => t.status === "completed").length;
   const pendingTasks = tasks.filter((t) => t.status === "pending").length;
   const progressPct =
     totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
-  // ── Barra de progreso animada ───────────────────────────
   const progressAnim = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     Animated.timing(progressAnim, {
@@ -86,7 +77,6 @@ const HomeScreen = ({ navigation }) => {
     outputRange: ["0%", "100%"],
   });
 
-  // ── Hora del saludo ─────────────────────────────────────
   const getGreeting = () => {
     const hour = new Date().getHours();
     if (hour < 12) return "☀️  Buenos días";
@@ -94,7 +84,6 @@ const HomeScreen = ({ navigation }) => {
     return "🌙  Buenas noches";
   };
 
-  // ── Componente: Header con estadísticas ─────────────────
   const renderHeader = () => (
     <Animated.View
       style={[
@@ -112,11 +101,10 @@ const HomeScreen = ({ navigation }) => {
         },
       ]}
     >
-      {/* Círculos decorativos */}
+      
       <View style={styles.decorCircle1} />
       <View style={styles.decorCircle2} />
 
-      {/* Saludo + logo */}
       <View style={styles.headerTop}>
         <View>
           <Text style={styles.greeting}>{getGreeting()}</Text>
@@ -130,13 +118,11 @@ const HomeScreen = ({ navigation }) => {
           </Text>
         </View>
 
-        {/* Avatar / logo compacto */}
         <View style={styles.avatarWrapper}>
           <Text style={styles.avatarText}>K</Text>
         </View>
       </View>
 
-      {/* Tarjetas de estadísticas */}
       <View style={styles.statsRow}>
         <View style={[styles.statCard, { borderLeftColor: colors.primary }]}>
           <Text style={styles.statNumber}>{totalTasks}</Text>
@@ -158,7 +144,6 @@ const HomeScreen = ({ navigation }) => {
         </View>
       </View>
 
-      {/* Barra de progreso */}
       <View style={styles.progressWrapper}>
         <View style={styles.progressLabelRow}>
           <Text style={styles.progressLabel}>Progreso general</Text>
@@ -180,7 +165,6 @@ const HomeScreen = ({ navigation }) => {
     </Animated.View>
   );
 
-  // ── Componente: Filtros ─────────────────────────────────
   const renderFilters = () => (
     <View style={styles.filtersWrapper}>
       {FILTERS.map((f) => (
@@ -204,7 +188,6 @@ const HomeScreen = ({ navigation }) => {
     </View>
   );
 
-  // ── Componente: Lista vacía ─────────────────────────────
   const renderEmpty = () => (
     <View style={styles.emptyWrapper}>
       <Text style={styles.emptyIcon}>📭</Text>
@@ -216,10 +199,8 @@ const HomeScreen = ({ navigation }) => {
     </View>
   );
 
-  // ── Componente: Separador entre items ───────────────────
   const renderSeparator = () => <View style={{ height: 2 }} />;
 
-  // ─────────────────────────────────────────────────────────
   return (
     <View style={styles.root}>
       <StatusBar barStyle="light-content" backgroundColor={colors.primary} />
@@ -227,7 +208,7 @@ const HomeScreen = ({ navigation }) => {
       <FlatList
         data={filteredTasks}
         keyExtractor={(item) => item.id}
-        // Header y filtros dentro del scroll
+        
         ListHeaderComponent={
           <>
             {renderHeader()}
@@ -266,7 +247,6 @@ const HomeScreen = ({ navigation }) => {
         showsVerticalScrollIndicator={false}
       />
 
-      {/* ── FAB: Nueva tarea ─────────────────────────── */}
       <Animated.View
         style={[
           styles.fabWrapper,
@@ -296,14 +276,12 @@ const HomeScreen = ({ navigation }) => {
   );
 };
 
-// ── ESTILOS ───────────────────────────────────────────────
 const styles = StyleSheet.create({
   root: {
     flex: 1,
     backgroundColor: colors.background,
   },
 
-  // ── Header ──────────────────────────────────────────────
   headerContainer: {
     backgroundColor: colors.primary,
     paddingTop: Platform.OS === "android" ? 48 : 56,
@@ -379,7 +357,6 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
   },
 
-  // ── Estadísticas ─────────────────────────────────────────
   statsRow: {
     flexDirection: "row",
     gap: 10,
@@ -409,7 +386,6 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
 
-  // ── Progreso ─────────────────────────────────────────────
   progressWrapper: {
     marginTop: 4,
   },
@@ -444,7 +420,6 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
 
-  // ── Sección lista ────────────────────────────────────────
   listSection: {
     paddingHorizontal: 20,
     paddingTop: 20,
@@ -465,7 +440,6 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
 
-  // ── Filtros ──────────────────────────────────────────────
   filtersWrapper: {
     flexDirection: "row",
     gap: 8,
@@ -504,12 +478,10 @@ const styles = StyleSheet.create({
     marginTop: 3,
   },
 
-  // ── Lista ────────────────────────────────────────────────
   listContent: {
     paddingBottom: 110,
   },
 
-  // ── Estado vacío ─────────────────────────────────────────
   emptyWrapper: {
     alignItems: "center",
     paddingVertical: 60,
@@ -535,7 +507,6 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
 
-  // ── FAB ──────────────────────────────────────────────────
   fabWrapper: {
     position: "absolute",
     bottom: 28,

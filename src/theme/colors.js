@@ -1,5 +1,3 @@
-// src/theme/colors.js
-
 const colors = {
 
   // ── Primarios ────────────────────────────────────────────
