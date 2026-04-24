@@ -21,7 +21,7 @@ const TaskDetailScreen = ({ route, navigation }) => {
       <View style={styles.emptyRoot}>
         <StatusBar barStyle="dark-content" backgroundColor={colors.background} />
         <Text style={styles.emptyTitle}>Tarea no encontrada</Text>
-        <Text style={styles.emptySubtitle}>La tarea seleccionada ya no est· disponible.</Text>
+        <Text style={styles.emptySubtitle}>La tarea seleccionada ya no est√° disponible.</Text>
         <TouchableOpacity
           style={styles.returnButton}
           onPress={() => navigation.navigate('Home')}
@@ -36,7 +36,7 @@ const TaskDetailScreen = ({ route, navigation }) => {
   const handleToggle = () => toggleTaskStatus(task.id);
 
   const handleDelete = () => {
-    Alert.alert('Eliminar tarea', 'øEst·s seguro de que quieres eliminar esta tarea?', [
+    Alert.alert('Eliminar tarea', '¬øEst√°s seguro de que quieres eliminar esta tarea?', [
       { text: 'Cancelar', style: 'cancel' },
       {
         text: 'Eliminar',
@@ -65,7 +65,7 @@ const TaskDetailScreen = ({ route, navigation }) => {
       </View>
 
       <View style={styles.content}>
-        <Text style={styles.sectionLabel}>DescripciÛn</Text>
+        <Text style={styles.sectionLabel}>Descripci√≥n</Text>
         <Text style={styles.description}>{task.description}</Text>
 
         <View style={styles.infoRow}>

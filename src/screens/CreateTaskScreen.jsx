@@ -15,9 +15,9 @@ import { useTasks } from '../context/TaskContext';
 
 const CATEGORY_OPTIONS = [
   'Comercial',
-  'Diseño',
+  'DiseÃ±o',
   'Desarrollo',
-  'Gestión',
+  'GestiÃ³n',
   'Marketing',
   'Soporte',
 ];
@@ -48,9 +48,9 @@ const CreateTaskScreen = ({ navigation }) => {
   const validate = () => {
     const nextErrors = {};
 
-    if (!title.trim()) nextErrors.title = 'El título es obligatorio.';
-    if (!description.trim()) nextErrors.description = 'La descripción es obligatoria.';
-    if (!category) nextErrors.category = 'Selecciona una categoría.';
+    if (!title.trim()) nextErrors.title = 'El tÃ­tulo es obligatorio.';
+    if (!description.trim()) nextErrors.description = 'La descripciÃ³n es obligatoria.';
+    if (!category) nextErrors.category = 'Selecciona una categorÃ­a.';
 
     setErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
@@ -84,7 +84,7 @@ const CreateTaskScreen = ({ navigation }) => {
 
         <View style={styles.formCard}>
           <View style={styles.field}>
-            <Text style={styles.label}>Título</Text>
+            <Text style={styles.label}>TÃ­tulo</Text>
             <TextInput
               style={[styles.input, errors.title && styles.inputError]}
               placeholder="Nombre de la tarea"
@@ -100,7 +100,7 @@ const CreateTaskScreen = ({ navigation }) => {
           </View>
 
           <View style={styles.field}>
-            <Text style={styles.label}>Descripción</Text>
+            <Text style={styles.label}>DescripciÃ³n</Text>
             <TextInput
               style={[styles.input, styles.textArea, errors.description && styles.inputError]}
               placeholder="Detalles de la tarea"
@@ -118,7 +118,7 @@ const CreateTaskScreen = ({ navigation }) => {
           </View>
 
           <View style={styles.field}>
-            <Text style={styles.label}>Categoría</Text>
+            <Text style={styles.label}>CategorÃ­a</Text>
             <View style={styles.optionsRow}>
               {CATEGORY_OPTIONS.map((item) => (
                 <TouchableOpacity

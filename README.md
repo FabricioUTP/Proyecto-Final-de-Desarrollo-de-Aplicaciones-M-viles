@@ -1,17 +1,17 @@
 # KronoTask
 
-**KronoTask** es una aplicaci�n m�vil empresarial para gestionar tareas diarias con interfaz responsive, validaciones de formulario y navegaci�n entre pantallas.
+**KronoTask** es una aplicación móvil empresarial para gestionar tareas diarias con interfaz responsive, validaciones de formulario y navegación entre pantallas.
 
-## ?? Evaluaci�n de la aplicaci�n
+## ?? Evaluación de la aplicación
 
-Esta aplicaci�n cumple los criterios de la r�brica con:
+Esta aplicación cumple los criterios de la rúbrica con:
 
 - Estructura de proyecto ordenada y clara en `src/`
-- Uso de componentes b�sicos `View`, `Text`, `TextInput`, `TouchableOpacity` y estilos nativos
+- Uso de componentes básicos `View`, `Text`, `TextInput`, `TouchableOpacity` y estilos nativos
 - Componente reutilizable `TaskCard` con props para renderizar tareas
-- Navegaci�n entre `Login`, `Home`, `CreateTask` y `TaskDetail`
-- Formulario con validaci�n y retroalimentaci�n visible al usuario
-- Documentaci�n con ejecuci�n y caracter�sticas
+- Navegación entre `Login`, `Home`, `CreateTask` y `TaskDetail`
+- Formulario con validación y retroalimentación visible al usuario
+- Documentación con ejecución y características
 
 ## ?? Estructura del proyecto
 
@@ -37,7 +37,7 @@ Proyecto-Final-de-Desarrollo-de-Aplicaciones-M-viles/
         +-- colors.js
 ```
 
-## ?? Tecnolog�as
+## ?? Tecnologías
 
 - React Native
 - Expo
@@ -45,7 +45,7 @@ Proyecto-Final-de-Desarrollo-de-Aplicaciones-M-viles/
 - JavaScript (ES6+)
 - Expo Vector Icons
 
-## ?? Instalaci�n y ejecuci�n
+## ?? Instalación y ejecución
 
 1. Clona el repositorio:
 
@@ -73,33 +73,33 @@ npm start
 - `w` para web
 - O escanea el QR con Expo Go
 
-## ?? Flujo de la aplicaci�n
+## ?? Flujo de la aplicación
 
 ### 1. Login
 
 - Pantalla `src/screens/LoginScreen.jsx`
-- Validaciones: correo obligatorio, formato email, m�nimo 6 caracteres de contrase�a
+- Validaciones: correo obligatorio, formato email, mínimo 6 caracteres de contraseña
 - Credenciales de acceso de prueba:
   - Email: `admin@kronotask.com`
-  - Contrase�a: `admin123`
-- Navega a `Home` al iniciar sesi�n
+  - Contraseña: `admin123`
+- Navega a `Home` al iniciar sesión
 
 ### 2. Home
 
 - Pantalla `src/screens/HomeScreen.jsx`
 - Muestra lista de tareas con `FlatList`
 - Filtros: Todas, Pendientes, Completadas
-- Progreso y estad�sticas din�micas
-- Bot�n flotante para crear nueva tarea
+- Progreso y estadísticas dinámicas
+- Botón flotante para crear nueva tarea
 - Cada tarea abre `TaskDetail`
 
 ### 3. Crear tarea
 
 - Pantalla `src/screens/CreateTaskScreen.jsx`
 - Formulario con campos:
-  - T�tulo
-  - Descripci�n
-  - Categor�a
+  - Título
+  - Descripción
+  - Categoría
   - Prioridad
 - Validaciones visibles por campo
 - Guarda tarea en estado global con contexto
@@ -107,7 +107,7 @@ npm start
 ### 4. Detalle de tarea
 
 - Pantalla `src/screens/TaskDetailScreen.jsx`
-- Muestra informaci�n de la tarea seleccionada
+- Muestra información de la tarea seleccionada
 - Permite cambiar el estado entre pendiente/completada
 - Permite eliminar la tarea
 
@@ -115,21 +115,21 @@ npm start
 
 - Contexto global de tareas con `TaskContext.jsx`
 - Componente reutilizable `TaskCard.jsx`
-- Navegaci�n completa entre pantallas principales
+- Navegación completa entre pantallas principales
 - Validaciones de formulario en `Login` y `CreateTask`
-- Estado de tareas editables y persistencia en memoria durante la sesi�n
+- Estado de tareas editables y persistencia en memoria durante la sesión
 
-## ?? Buenas pr�cticas incluidas
+## ?? Buenas prácticas incluidas
 
 - Componentes desacoplados y reutilizables
 - Uso de `useState`, `useEffect`, `useMemo` y contexto
 - Estilos consistentes en `src/theme/colors.js`
 - Interfaz responsive con Flexbox y `ScrollView`
 
-## ?? C�mo validar el proyecto
+## ?? Cómo validar el proyecto
 
 - Ejecuta `npm install`
 - Ejecuta `npm start`
 - Inicia en emulador Android con `npm run android`
 
-> Nota: Si los paquetes no est�n instalados localmente, instala dependencias antes de ejecutar.
+> Nota: Si los paquetes no están instalados localmente, instala dependencias antes de ejecutar.

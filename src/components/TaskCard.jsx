@@ -10,9 +10,9 @@ import { colors } from '../theme/colors';
 
 const CATEGORY_ICONS = {
   'Comercial':  '??',
-  'Diseño':     '??',
+  'DiseÃ±o':     '??',
   'Desarrollo': '??',
-  'Gestión':    '??',
+  'GestiÃ³n':    '??',
   'Marketing':  '??',
   'Soporte':    '???',
   'default':    '??',
@@ -126,7 +126,7 @@ const TaskCard = ({ task, priorityConfig, onPress, onToggle, index = 0 }) => {
               {isCompleted ? <Text style={styles.toggleIconDone}>?</Text> : <View style={styles.toggleCircleEmpty} />}
             </TouchableOpacity>
           </Animated.View>
-          <Text style={styles.arrowIcon}>›</Text>
+          <Text style={styles.arrowIcon}>ï¿½</Text>
         </View>
       </TouchableOpacity>
     </Animated.View>
