@@ -122,7 +122,7 @@ const LoginScreen = ({ navigation }) => {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        {/* ── HERO ──────────────────────────────────── */}
+
         <View style={styles.hero}>
           <View style={styles.circleLarge} />
           <View style={styles.circleSmall} />
@@ -134,17 +134,15 @@ const LoginScreen = ({ navigation }) => {
           <Text style={styles.appTagline}>Gestión de tareas empresariales</Text>
         </View>
 
-        {/* ── FORMULARIO ────────────────────────────── */}
         <Animated.View
           style={[styles.card, { transform: [{ translateX: shakeAnim }] }]}
         >
-          {/* Título centrado */}
+
           <Text style={styles.cardTitle}>Iniciar sesión</Text>
           <Text style={styles.cardSubtitle}>
             Accede con tu cuenta corporativa
           </Text>
 
-          {/* Campo: correo */}
           <View style={styles.fieldWrapper}>
             <Text style={styles.label}>Correo corporativo</Text>
             <View
@@ -171,7 +169,6 @@ const LoginScreen = ({ navigation }) => {
             ) : null}
           </View>
 
-          {/* Campo: contraseña */}
           <View style={styles.fieldWrapper}>
             <Text style={styles.label}>Contraseña</Text>
             <View
@@ -195,7 +192,7 @@ const LoginScreen = ({ navigation }) => {
                 onPress={() => setShowPass(!showPass)}
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               >
-                <Text style={styles.eyeIcon}>{showPass ? "🙈" : "👁️"}</Text>
+                <Text style={styles.eyeIcon}>{showPass ? "👁️‍🗨️" : "👁️"}</Text>
               </TouchableOpacity>
             </View>
             {errors.password ? (
@@ -203,7 +200,6 @@ const LoginScreen = ({ navigation }) => {
             ) : null}
           </View>
 
-          {/* Botón principal */}
           <Animated.View style={{ transform: [{ scale: buttonScale }] }}>
             <TouchableOpacity
               style={[styles.btnPrimary, isLoading && styles.btnDisabled]}
@@ -217,7 +213,6 @@ const LoginScreen = ({ navigation }) => {
             </TouchableOpacity>
           </Animated.View>
 
-          {/* Crear cuenta */}
           <View style={styles.registerRow}>
             <Text style={styles.registerText}>¿No tienes una cuenta? </Text>
             <TouchableOpacity
@@ -228,14 +223,12 @@ const LoginScreen = ({ navigation }) => {
             </TouchableOpacity>
           </View>
 
-          {/* Divider */}
           <View style={styles.divider}>
             <View style={styles.dividerLine} />
             <Text style={styles.dividerText}>plataforma</Text>
             <View style={styles.dividerLine} />
           </View>
 
-          {/* Chips empresariales */}
           <View style={styles.chipsRow}>
             <View style={styles.chip}>
               <Text style={styles.chipText}>🔐 Acceso seguro</Text>
@@ -249,7 +242,6 @@ const LoginScreen = ({ navigation }) => {
           </View>
         </Animated.View>
 
-        {/* ── FOOTER ────────────────────────────────── */}
         <Text style={styles.footer}>
           © 2026 KronoTask · Todos los derechos reservados
         </Text>
