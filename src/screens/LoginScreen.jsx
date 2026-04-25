@@ -9,7 +9,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View, 
 } from "react-native";
 import { colors } from "../theme/colors";
 
@@ -108,7 +108,7 @@ const LoginScreen = ({ navigation }) => {
     });
   };
 
-  const clearError = (field) => setErrors((prev) => ({ ...prev, [field]: "" }));
+    const clearError = (field) => setErrors((prev) => ({ ...prev, [field]: "" }));
 
   return (
     <KeyboardAvoidingView
