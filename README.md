@@ -23,8 +23,8 @@ Desarrollada con **React Native** y **Expo**, la aplicación implementa buenas p
 
 | # | Nombre Completo | Rol |
 |---|---|---|
-| 1 | Fabricio Manuel Munives Santamaría | Desarrollador Mobile / Frontend |
-| 2 | Elmer Diego Falla Samaniego | Desarrollador Mobile / Frontend |
+| 1 | Fabricio Manuel Munives Santamaría | Desarrollador Mobile / Frontend / Backend / DB|
+| 2 | Elmer Diego Falla Samaniego | Desarrollador Mobile / Frontend / Backend / DB|
 
 ---
 
@@ -57,8 +57,6 @@ La paleta fue seleccionada para transmitir profesionalismo, claridad visual y bu
 | **JSX** | — | Extensión de sintaxis para la definición de interfaces |
 | **CSS-in-JS (StyleSheet)** | — | Estilos mediante la API nativa de React Native |
 | **React Navigation** | v6 | Navegación entre pantallas |
-| **Firebase** | v10+ | Backend como servicio (BaaS) — implementación futura |
-| **Firestore** | — | Base de datos NoSQL en la nube — implementación futura |
 
 ---
 
@@ -95,28 +93,29 @@ KronoTask/
 │   └── images/
 │
 ├── src/
-│   ├── components/                # Componentes reutilizables
-│   │   └── TaskCard.jsx           # Tarjeta de tarea con props
+│   ├── components/                   # Componentes reutilizables
+│   │   └── TaskCard.jsx              # Tarjeta de tarea con props
 │   │
-│   ├── context/                   # Manejo de estado global de la aplicación
-│   │   └── TaskContext.jsx        # Contexto de tareas
+│   ├── context/                      # Manejo de estado global de la aplicación
+│   │   └── TaskContext.jsx           # Contexto de tareas
 │   │
-│   ├── screens/                   # Pantallas de la aplicación
-│   │   ├── LoginScreen.jsx        # Pantalla de inicio de sesión
-│   │   ├── HomeScreen.jsx         # Dashboard principal con lista de tareas
-│   │   ├── CreateTaskScreen.jsx   # Formulario para crear nueva tarea
-│   │   └── TaskDetailScreen.jsx   # Detalle y gestión de una tarea
+│   ├── screens/                      # Pantallas de la aplicación
+│   │   ├── LoginScreen.jsx           # Pantalla de inicio de sesión
+│   │   ├── CreateAccountScreen.jsx   # Pantalla de registro de usuario
+│   │   ├── HomeScreen.jsx            # Dashboard principal con lista de tareas
+│   │   ├── CreateTaskScreen.jsx      # Formulario para crear nueva tarea
+│   │   └── TaskDetailScreen.jsx      # Detalle y gestión de una tarea
 │   │
-│   ├── navigation/                # Configuración de navegación
-│   │   └── AppNavigator.jsx       # Stack Navigator principal
+│   ├── navigation/                   # Configuración de navegación
+│   │   └── AppNavigator.jsx          # Stack Navigator principal
 │   │
-│   └── theme/                     # Estilos y tokens globales
-│       └── colors.js              # Paleta de colores centralizada
+│   └── theme/                        # Estilos y tokens globales
+│       └── colors.js                 # Paleta de colores centralizada
 │
-├── App.jsx                         # Punto de entrada de la aplicación
-├── app.json                       # Configuración de Expo
-├── package.json                   # Dependencias del proyecto
-└── README.md                      # Documentación del proyecto
+├── App.jsx                           # Punto de entrada de la aplicación
+├── app.json                          # Configuración de Expo
+├── package.json                      # Dependencias del proyecto
+└── README.md                         # Documentación del proyecto
 ```
 
 ---
@@ -194,7 +193,7 @@ npx expo install @react-native-async-storage/async-storage
 ### Paso 6 — Ejecutar la aplicación
 
 ```bash
-npx start
+npx expo start
 ```
 
 Luego elige una de las siguientes opciones en la terminal:
@@ -210,11 +209,11 @@ Luego elige una de las siguientes opciones en la terminal:
 
 ## 📱 Vistas — Avance 1 (Semana 5)
 
-Este primer avance cuenta con **4 pantallas** funcionales conectadas mediante navegación con React Navigation.
+Este primer avance cuenta con **5 pantallas** funcionales conectadas mediante navegación con React Navigation.
 
 ---
 
-### 1. 🔐 Login Screen
+### 1. 🔐 Pantalla de login
 **Archivo:** `src/screens/LoginScreen.js`
 
 Pantalla de inicio de sesión empresarial. Implementa un formulario con validaciones en tiempo real.
@@ -222,55 +221,80 @@ Pantalla de inicio de sesión empresarial. Implementa un formulario con validaci
 | Elemento | Detalle |
 |---|---|
 | Campos | Correo corporativo y contraseña |
-| Validaciones | Campo vacío, formato de email, mínimo 6 caracteres en contraseña |
-| Retroalimentación | Mensajes de error visibles bajo cada campo |
+| Validaciones | Campo vacío, formato de email, mínimo 6 caracteres, al menos 1 mayúscula y 1 número |
+| Retroalimentación | Mensajes de error visibles, animación de shake al error |
+| Show/hide | Botón para mostrar u ocultar contraseña |
 | Navegación | Redirige al Home al ingresar credenciales válidas |
-| Componentes | `TextInput`, `TouchableOpacity`, `KeyboardAvoidingView`, `ScrollView` |
+| Componentes | `TextInput`, `TouchableOpacity`, `KeyboardAvoidingView`, `ScrollView`, `Image`, `Animated` |
 
 ---
 
-### 2. 🏠 Home Screen (Dashboard)
+### 2. 👤 Pantalla de crear cuenta
+**Archivo:** `src/screens/CreateAccountScreen.jsx`
+
+Formulario de registro empresarial con validaciones avanzadas en tiempo real.
+
+| Elemento | Detalle |
+|---|---|
+| Campos | Nombre completo, cargo en la empresa, correo corporativo, contraseña y confirmar contraseña |
+| Validaciones | Campos obligatorios, solo letras en nombre, formato de email, mínimo 6 caracteres, al menos 1 mayúscula y 1 número en contraseña, coincidencia de contraseñas |
+| Retroalimentación | Mensajes de error visibles, indicador de requisitos de contraseña en tiempo real, confirmación verde al coincidir contraseñas |
+| Animaciones | Shake del formulario al error, animación de éxito al crear cuenta |
+| Show/hide | Botón para mostrar u ocultar contraseña en ambos campos |
+| Navegación | Redirige al Home al crear cuenta exitosamente |
+| Componentes | `TextInput`, `TouchableOpacity`, `KeyboardAvoidingView`, `ScrollView`, `Image`, `Animated` |
+
+---
+
+### 3. 🏠 Pantalla principal (Dashboard)
 **Archivo:** `src/screens/HomeScreen.js`
 
 Panel principal de la aplicación. Muestra la lista de tareas del usuario con opciones de filtrado y un contador de progreso.
 
 | Elemento | Detalle |
 |---|---|
+| Barra superior | Logo y nombre de la app a la izquierda, avatar y nombre del usuario a la derecha |
 | Lista dinámica | Renderizada con `FlatList` y estado `useState` |
 | Filtros | Todas / Pendientes / Completadas |
-| Contador | Badge que muestra tareas completadas vs. total |
+| Estadísticas | Cards con total, pendientes y completadas |
+| Progreso | Barra animada con porcentaje de tareas completadas |
 | Acciones | Cambiar estado de tarea directamente desde la lista |
 | Navegación | Accede a Crear Tarea (FAB) y Detalle de Tarea (tap en card) |
-| Componentes | `FlatList`, `TouchableOpacity`, `TaskCard` |
+| Componentes | `FlatList`, `TouchableOpacity`, `Image`, `Animated`, `TaskCard` |
 
 ---
 
-### 3. ✏️ Create Task Screen
+### 4. ✏️ Pantalla de crear tarea
 **Archivo:** `src/screens/CreateTaskScreen.js`
 
 Formulario interactivo para registrar nuevas tareas con validaciones y selección de prioridad.
 
 | Elemento | Detalle |
 |---|---|
-| Campos | Título y descripción |
-| Validaciones | Campos obligatorios, mínimo 5 caracteres en el título |
+| Campos | Título (máx. 80 caracteres) y descripción (máx. 300 caracteres) |
+| Validaciones | Campos obligatorios, mínimo 5 caracteres en título y 10 en descripción |
+| Categoría | Selector visual: 💼 Comercial / 🎨 Diseño / 💻 Desarrollo / 📊 Gestión / 📣 Marketing / 🛠️ Soporte |
 | Prioridad | Selector visual: 🔴 Alta / 🟡 Media / 🟢 Baja |
-| Acción | Agrega la tarea al listado y retorna al Home |
-| Componentes | `TextInput`, `TouchableOpacity`, `ScrollView`, `KeyboardAvoidingView` |
+| Vista previa | Previsualización en tiempo real de la tarea mientras se escribe |
+| Animaciones | Shake al error, animación de entrada del formulario, botón animado |
+| Componentes | `TextInput`, `TouchableOpacity`, `ScrollView`, `KeyboardAvoidingView`, `Image`, `Animated` |
 
 ---
 
-### 4. 🔍 Task Detail Screen
+### 5. 🔍 Pantalla de detalle de tarea
 **Archivo:** `src/screens/TaskDetailScreen.js`
 
 Vista detallada de una tarea seleccionada. Permite cambiar su estado o eliminarla.
 
 | Elemento | Detalle |
 |---|---|
-| Información | Título, descripción, estado actual y prioridad |
-| Acciones | Marcar como completada / pendiente y eliminar tarea |
-| Estado | Actualización sincronizada con la lista del Home |
-| Componentes | `ScrollView`, `TouchableOpacity`, badges de estado dinámicos |
+| Información | Título, descripción, estado, prioridad, categoría y fecha de creación |
+| Header dinámico | Cambia de color índigo a verde según el estado de la tarea |
+| Metadatos | Cards con prioridad, fecha de creación y categoría |
+| Barra de estado | Indicador visual del flujo: Creada → En curso / Completada |
+| Acciones | Marcar como completada / pendiente (`TouchableOpacity`) y eliminar tarea (`Button`) |
+| Animaciones | Fade + slide de entrada, animación del botón de acción |
+| Componentes | `ScrollView`, `TouchableOpacity`, `Button`, `Image`, `Animated`, `Alert` |
 
 ---
 
@@ -278,6 +302,7 @@ Vista detallada de una tarea seleccionada. Permite cambiar su estado o eliminarl
 
 ```
 LoginScreen
+    ├──▶ CreateAccountScreen ──▶ HomeScreen
     └──▶ HomeScreen
               ├──▶ CreateTaskScreen ──▶ (regresa al Home)
               └──▶ TaskDetailScreen ──▶ (regresa al Home)
@@ -301,7 +326,7 @@ A continuación se muestran las principales vistas de la aplicación **KronoTask
 
 ---
 
-### 🔐 Login Screen
+### 🔐 Pantalla de inicio de sesión
 
 <p align="center">
   <img src="./assets/images/login.png" width="300" />
@@ -309,7 +334,14 @@ A continuación se muestran las principales vistas de la aplicación **KronoTask
 
 ---
 
-### 🏠 Home Screen (Dashboard)
+### 👤 Pantalla de crear cuenta
+<p align="center">
+  <img src="./assets/images/crearCuenta.png" width="300" />
+</p>
+
+---
+
+### 🏠 Pantalla principal (Dashboard)
 
 <p align="center">
   <img src="./assets/images/home.png" width="300" />
@@ -317,18 +349,18 @@ A continuación se muestran las principales vistas de la aplicación **KronoTask
 
 ---
 
-### ✏️ Create Task Screen
+### ✏️ Pantalla de creación de tarea
 
 <p align="center">
-  <img src="./assets/images/create-task.png" width="300" />
+  <img src="./assets/images/crearTarea.png" width="300" />
 </p>
 
 ---
 
-### 🔍 Task Detail Screen
+### 🔍 Pantalla de detalle de tarea
 
 <p align="center">
-  <img src="./assets/images/task-detail.png" width="300" />
+  <img src="./assets/images/detalleTarea.png" width="300" />
 </p>
 
 ---

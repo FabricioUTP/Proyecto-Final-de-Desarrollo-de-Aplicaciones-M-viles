@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from "react";
 import {
     Animated,
     Dimensions,
+    Image,
     FlatList,
     Platform,
     StatusBar,
@@ -104,7 +105,7 @@ const HomeScreen = ({ navigation }) => {
       
       <View style={styles.decorCircle1} />
       <View style={styles.decorCircle2} />
-
+      
       <View style={styles.headerTop}>
         <View>
           <Text style={styles.greeting}>{getGreeting()}</Text>
@@ -117,24 +118,18 @@ const HomeScreen = ({ navigation }) => {
             })}
           </Text>
         </View>
-
-        <View style={styles.avatarWrapper}>
-          <Text style={styles.avatarText}>K</Text>
-        </View>
       </View>
-
+      
       <View style={styles.statsRow}>
         <View style={[styles.statCard, { borderLeftColor: colors.primary }]}>
           <Text style={styles.statNumber}>{totalTasks}</Text>
           <Text style={styles.statLabel}>Total</Text>
         </View>
-        <View
-          style={[styles.statCard, { borderLeftColor: colors.priorityHigh }]}
-        >
+        <View style={[styles.statCard, { borderLeftColor: colors.priorityHigh }]}>
           <Text style={[styles.statNumber, { color: colors.priorityHigh }]}>
             {pendingTasks}
-          </Text>
-          <Text style={styles.statLabel}>Pendientes</Text>
+            </Text>
+            <Text style={styles.statLabel}>Pendientes</Text>
         </View>
         <View style={[styles.statCard, { borderLeftColor: colors.secondary }]}>
           <Text style={[styles.statNumber, { color: colors.secondary }]}>
@@ -339,24 +334,8 @@ const styles = StyleSheet.create({
     marginTop: 4,
     textTransform: "capitalize",
   },
-
-  avatarWrapper: {
-    width: 48,
-    height: 48,
-    borderRadius: 16,
-    backgroundColor: "rgba(255,255,255,0.18)",
-    borderWidth: 1.5,
-    borderColor: "rgba(255,255,255,0.3)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  avatarText: {
-    fontSize: 22,
-    fontWeight: "900",
-    color: "#FFFFFF",
-  },
-
+  
+  
   statsRow: {
     flexDirection: "row",
     gap: 10,

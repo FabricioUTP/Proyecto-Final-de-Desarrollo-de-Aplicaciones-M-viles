@@ -3,6 +3,7 @@ import {
   Animated,
   KeyboardAvoidingView,
   Platform,
+  Image,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -14,7 +15,7 @@ import {
 import { colors } from "../theme/colors";
 
 const TEMP_EMAIL = "admin@kronotask.com";
-const TEMP_PASSWORD = "admin123";
+const TEMP_PASSWORD = "Admin123";
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
@@ -41,6 +42,10 @@ const LoginScreen = ({ navigation }) => {
       newErrors.password = "La contraseña es obligatoria.";
     } else if (password.length < 6) {
       newErrors.password = "Debe tener al menos 6 caracteres.";
+    } else if (!/(?=.*[A-Z])/.test(password)) {
+      newErrors.password = "Debe contener al menos una mayúscula.";
+    } else if (!/(?=.*[0-9])/.test(password)) {
+      newErrors.password = "Debe contener al menos un número.";
     } else if (password !== TEMP_PASSWORD) {
       newErrors.password = "Contraseña incorrecta.";
     }
@@ -126,10 +131,13 @@ const LoginScreen = ({ navigation }) => {
         <View style={styles.hero}>
           <View style={styles.circleLarge} />
           <View style={styles.circleSmall} />
+          
+          <Image
+          source={require("../../assets/images/logo.png")}
+          style={styles.logoImage}
+          resizeMode="contain"
+          />
 
-          <View style={styles.logoWrapper}>
-            <Text style={styles.logoLetter}>K</Text>
-          </View>
           <Text style={styles.appName}>KronoTask</Text>
           <Text style={styles.appTagline}>Gestión de tareas empresariales</Text>
         </View>
@@ -177,7 +185,7 @@ const LoginScreen = ({ navigation }) => {
               <Text style={styles.inputIcon}>🔒</Text>
               <TextInput
                 style={styles.input}
-                placeholder="Mínimo 6 caracteres"
+                placeholder="Contra123"
                 placeholderTextColor={colors.textSecondary}
                 secureTextEntry={!showPass}
                 value={password}
@@ -308,6 +316,13 @@ const styles = StyleSheet.create({
     fontWeight: "900",
     color: "#FFFFFF",
     letterSpacing: -1,
+  },
+
+  logoImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 24,
+    marginBottom: 16,
   },
 
   appName: {

@@ -1,5 +1,6 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { Image, Text, View } from "react-native";
 
 import CreateAccountScreen from "../screens/CreateAccountScreen";
 import CreateTaskScreen from "../screens/CreateTaskScreen";
@@ -39,9 +40,43 @@ const AppNavigator = () => (
         name="Home"
         component={HomeScreen}
         options={{
-          title: "KronoTask",
-          headerLeft: () => null, 
-          gestureEnabled: false, 
+          title: "Home",
+          headerTitle: () => null,
+          headerLeft: () => (
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginLeft: 4 }}>
+              <Image
+                source={require("../../assets/images/logo.png")}
+                style={{ width: 32, height: 32, borderRadius: 8 }}
+                resizeMode="contain"
+              />
+              <Text style={{ fontSize: 18, fontWeight: "800", color: colors.primary, letterSpacing: 0.5 }}>
+                KronoTask
+              </Text>
+            </View>
+          ),
+          headerRight: () => (
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginRight: 4 }}>
+              <View style={{ alignItems: "flex-end" }}>
+                <Text style={{ fontSize: 13, fontWeight: "700", color: colors.textPrimary }}>
+                  Admin
+                </Text>
+                <Text style={{ fontSize: 11, color: colors.textSecondary }}>
+                  Administrador
+                </Text>
+              </View>
+              <Image
+                source={require("../../assets/images/avatar.png")}
+                style={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: 10,
+                  borderWidth: 2,
+                  borderColor: colors.primaryLight,
+                }}
+                resizeMode="contain"
+              />
+            </View>
+          )
         }}
       />
 
