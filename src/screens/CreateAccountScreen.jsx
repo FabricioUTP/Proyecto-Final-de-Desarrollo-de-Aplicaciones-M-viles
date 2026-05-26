@@ -1,7 +1,7 @@
+// src/screens/CreateAccountScreen.jsx
 import { useRef, useState } from "react";
 import {
   Animated,
-  Dimensions,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -13,11 +13,12 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useAuth } from "../context/AuthContext";
 import { colors } from "../theme/colors";
 
-const { width } = Dimensions.get("window");
-
 const CreateAccountScreen = ({ navigation }) => {
+  const { register } = useAuth();
+
   const [fullName,        setFullName]        = useState("");
   const [jobTitle,        setJobTitle]        = useState("");
   const [email,           setEmail]           = useState("");
@@ -26,15 +27,15 @@ const CreateAccountScreen = ({ navigation }) => {
   const [showPass,        setShowPass]        = useState(false);
   const [showConfirm,     setShowConfirm]     = useState(false);
   const [errors,          setErrors]          = useState({});
+  const [authError,       setAuthError]       = useState("");  // error de registro (ej: email duplicado)
   const [isLoading,       setIsLoading]       = useState(false);
   const [success,         setSuccess]         = useState(false);
 
-  // ── Animaciones ────────────────────────────────────────
   const shakeAnim   = useRef(new Animated.Value(0)).current;
   const buttonScale = useRef(new Animated.Value(1)).current;
   const successAnim = useRef(new Animated.Value(0)).current;
 
-  // ── Validaciones ───────────────────────────────────────
+  // ── Validación de campos ──────────────────────────────────
   const validate = () => {
     const next = {};
 
@@ -78,7 +79,7 @@ const CreateAccountScreen = ({ navigation }) => {
     return Object.keys(next).length === 0;
   };
 
-  // ── Shake al error ─────────────────────────────────────
+  // ── Shake ─────────────────────────────────────────────────
   const triggerShake = () => {
     Animated.sequence([
       Animated.timing(shakeAnim, { toValue: 10,  duration: 60, useNativeDriver: true }),
@@ -89,7 +90,6 @@ const CreateAccountScreen = ({ navigation }) => {
     ]).start();
   };
 
-  // ── Animación de press en botón ────────────────────────
   const animatePress = (callback) => {
     Animated.sequence([
       Animated.timing(buttonScale, { toValue: 0.96, duration: 80, useNativeDriver: true }),
@@ -97,34 +97,46 @@ const CreateAccountScreen = ({ navigation }) => {
     ]).start(callback);
   };
 
-  // ── Animación de éxito ─────────────────────────────────
   const triggerSuccess = () => {
     Animated.spring(successAnim, {
       toValue: 1, friction: 5, useNativeDriver: true,
     }).start();
   };
 
-  // ── Crear cuenta ───────────────────────────────────────
+  // ── Crear cuenta ──────────────────────────────────────────
   const handleCreate = () => {
-    animatePress(() => {
-      if (validate()) {
-        setIsLoading(true);
-        setTimeout(() => {
-          setIsLoading(false);
-          setSuccess(true);
-          triggerSuccess();
-          setTimeout(() => navigation.replace("Home"), 1400);
-        }, 1200);
+    setAuthError("");
+    animatePress(async () => {
+      // 1. Validar campos
+      if (!validate()) {
+        triggerShake();
+        return;
+      }
+
+      // 2. Registrar en AsyncStorage vía AuthContext
+      setIsLoading(true);
+      const result = await register({ fullName, jobTitle, email, password });
+      setIsLoading(false);
+
+      if (result.success) {
+        // Mostrar pantalla de éxito y navegar al Home
+        setSuccess(true);
+        triggerSuccess();
+        setTimeout(() => navigation.replace("Home"), 1400);
       } else {
+        // Mostrar error (ej: correo duplicado)
+        setAuthError(result.error);
         triggerShake();
       }
     });
   };
 
-  const clearError = (field) =>
+  const clearError = (field) => {
     setErrors((prev) => ({ ...prev, [field]: "" }));
+    setAuthError("");
+  };
 
-  // ── Pantalla de éxito ──────────────────────────────────
+  // ── Pantalla de éxito ─────────────────────────────────────
   if (success) {
     return (
       <View style={styles.successRoot}>
@@ -154,7 +166,7 @@ const CreateAccountScreen = ({ navigation }) => {
     );
   }
 
-  // ─────────────────────────────────────────────────────
+  // ─────────────────────────────────────────────────────────
   return (
     <KeyboardAvoidingView
       style={styles.root}
@@ -167,36 +179,36 @@ const CreateAccountScreen = ({ navigation }) => {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-
         {/* ── HERO ────────────────────────────────────── */}
         <View style={styles.hero}>
           <View style={styles.circleLarge} />
           <View style={styles.circleSmall} />
-          
-          
           <Image
-          source={require("../../assets/images/logo.png")}
-          style={styles.logoImage}
-          resizeMode="contain"
+            source={require("../../assets/images/logo.png")}
+            style={styles.logoImage}
+            resizeMode="contain"
           />
-
           <Text style={styles.appName}>KronoTask</Text>
           <Text style={styles.appTagline}>Crea tu cuenta corporativa</Text>
         </View>
 
         {/* ── FORMULARIO ──────────────────────────────── */}
         <Animated.View
-          style={[
-            styles.card,
-            { transform: [{ translateX: shakeAnim }] },
-          ]}
+          style={[styles.card, { transform: [{ translateX: shakeAnim }] }]}
         >
           <Text style={styles.cardTitle}>Crear cuenta</Text>
           <Text style={styles.cardSubtitle}>
             Completa tus datos para registrarte
           </Text>
 
-          {/* Campo: nombre completo */}
+          {/* Banner de error de registro */}
+          {authError ? (
+            <View style={styles.authErrorBanner}>
+              <Text style={styles.authErrorText}>⚠  {authError}</Text>
+            </View>
+          ) : null}
+
+          {/* Nombre completo */}
           <View style={styles.fieldWrapper}>
             <Text style={styles.label}>Nombre completo</Text>
             <View style={[styles.inputRow, errors.fullName && styles.inputRowError]}>
@@ -212,12 +224,10 @@ const CreateAccountScreen = ({ navigation }) => {
                 returnKeyType="next"
               />
             </View>
-            {errors.fullName
-              ? <Text style={styles.errorText}>⚠ {errors.fullName}</Text>
-              : null}
+            {errors.fullName ? <Text style={styles.errorText}>⚠ {errors.fullName}</Text> : null}
           </View>
 
-          {/* Campo: cargo */}
+          {/* Cargo */}
           <View style={styles.fieldWrapper}>
             <Text style={styles.label}>Cargo en la empresa</Text>
             <View style={[styles.inputRow, errors.jobTitle && styles.inputRowError]}>
@@ -233,12 +243,10 @@ const CreateAccountScreen = ({ navigation }) => {
                 returnKeyType="next"
               />
             </View>
-            {errors.jobTitle
-              ? <Text style={styles.errorText}>⚠ {errors.jobTitle}</Text>
-              : null}
+            {errors.jobTitle ? <Text style={styles.errorText}>⚠ {errors.jobTitle}</Text> : null}
           </View>
 
-          {/* Campo: correo */}
+          {/* Correo */}
           <View style={styles.fieldWrapper}>
             <Text style={styles.label}>Correo corporativo</Text>
             <View style={[styles.inputRow, errors.email && styles.inputRowError]}>
@@ -255,12 +263,10 @@ const CreateAccountScreen = ({ navigation }) => {
                 returnKeyType="next"
               />
             </View>
-            {errors.email
-              ? <Text style={styles.errorText}>⚠ {errors.email}</Text>
-              : null}
+            {errors.email ? <Text style={styles.errorText}>⚠ {errors.email}</Text> : null}
           </View>
 
-          {/* Campo: contraseña */}
+          {/* Contraseña */}
           <View style={styles.fieldWrapper}>
             <Text style={styles.label}>Contraseña</Text>
             <View style={[styles.inputRow, errors.password && styles.inputRowError]}>
@@ -278,13 +284,10 @@ const CreateAccountScreen = ({ navigation }) => {
                 onPress={() => setShowPass(!showPass)}
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               >
-                <Text style={styles.eyeIcon}>{showPass ? "👁️‍🗨️" : "👁️"}</Text>
+                <Text style={styles.eyeIcon}>{showPass ? "🙈" : "👁️"}</Text>
               </TouchableOpacity>
             </View>
-            {errors.password
-              ? <Text style={styles.errorText}>⚠ {errors.password}</Text>
-              : null}
-            {/* Indicador de requisitos */}
+            {errors.password ? <Text style={styles.errorText}>⚠ {errors.password}</Text> : null}
             {password.length > 0 && !errors.password && (
               <View style={styles.requirementsRow}>
                 <Text style={[styles.req, password.length >= 6 && styles.reqMet]}>
@@ -300,7 +303,7 @@ const CreateAccountScreen = ({ navigation }) => {
             )}
           </View>
 
-          {/* Campo: confirmar contraseña */}
+          {/* Confirmar contraseña */}
           <View style={styles.fieldWrapper}>
             <Text style={styles.label}>Confirmar contraseña</Text>
             <View style={[styles.inputRow, errors.confirmPassword && styles.inputRowError]}>
@@ -329,7 +332,7 @@ const CreateAccountScreen = ({ navigation }) => {
                 : null}
           </View>
 
-          {/* Botón principal */}
+          {/* Botón crear cuenta */}
           <Animated.View style={{ transform: [{ scale: buttonScale }] }}>
             <TouchableOpacity
               style={[styles.btnPrimary, isLoading && styles.btnDisabled]}
@@ -346,10 +349,7 @@ const CreateAccountScreen = ({ navigation }) => {
           {/* Volver al login */}
           <View style={styles.loginRow}>
             <Text style={styles.loginText}>¿Ya tienes una cuenta? </Text>
-            <TouchableOpacity
-              onPress={() => navigation.goBack()}
-              activeOpacity={0.8}
-            >
+            <TouchableOpacity onPress={() => navigation.goBack()} activeOpacity={0.8}>
               <Text style={styles.loginLink}>Iniciar sesión</Text>
             </TouchableOpacity>
           </View>
@@ -358,288 +358,94 @@ const CreateAccountScreen = ({ navigation }) => {
         <Text style={styles.footer}>
           © 2026 KronoTask · Todos los derechos reservados
         </Text>
-
       </ScrollView>
     </KeyboardAvoidingView>
   );
 };
 
-// ── ESTILOS ──────────────────────────────────────────────
+// ── ESTILOS ───────────────────────────────────────────────
 const styles = StyleSheet.create({
+  root:   { flex: 1, backgroundColor: colors.background },
+  scroll: { flexGrow: 1, paddingBottom: 32 },
 
-  root: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-
-  scroll: {
-    flexGrow: 1,
-    paddingBottom: 32,
-  },
-
-  // ── Hero ─────────────────────────────────────────────
   hero: {
     backgroundColor: colors.primary,
-    paddingTop: 64,
-    paddingBottom: 56,
-    alignItems: "center",
-    overflow: "hidden",
+    paddingTop: 64, paddingBottom: 56,
+    alignItems: "center", overflow: "hidden",
   },
 
   circleLarge: {
-    position: "absolute",
-    width: 260,
-    height: 260,
-    borderRadius: 130,
-    backgroundColor: colors.primaryDark,
-    top: -80,
-    right: -60,
-    opacity: 0.5,
+    position: "absolute", width: 260, height: 260, borderRadius: 130,
+    backgroundColor: colors.primaryDark, top: -80, right: -60, opacity: 0.5,
   },
 
   circleSmall: {
-    position: "absolute",
-    width: 140,
-    height: 140,
-    borderRadius: 70,
-    backgroundColor: colors.primaryDark,
-    bottom: -40,
-    left: -30,
-    opacity: 0.4,
-  },
-  
-  logoImage: {
-  width: 80,
-  height: 80,
-  borderRadius: 24,
-  marginBottom: 16,
-},
-
-  appName: {
-    fontSize: 30,
-    fontWeight: "800",
-    color: "#FFFFFF",
-    letterSpacing: 1.5,
+    position: "absolute", width: 140, height: 140, borderRadius: 70,
+    backgroundColor: colors.primaryDark, bottom: -40, left: -30, opacity: 0.4,
   },
 
-  appTagline: {
-    fontSize: 13,
-    color: "rgba(255,255,255,0.75)",
-    marginTop: 6,
-    letterSpacing: 0.5,
-  },
+  logoImage: { width: 80, height: 80, borderRadius: 24, marginBottom: 16 },
+  appName:   { fontSize: 30, fontWeight: "800", color: "#FFFFFF", letterSpacing: 1.5 },
+  appTagline: { fontSize: 13, color: "rgba(255,255,255,0.75)", marginTop: 6, letterSpacing: 0.5 },
 
-  // ── Card ─────────────────────────────────────────────
   card: {
-    backgroundColor: colors.surface,
-    marginHorizontal: 20,
-    marginTop: -24,
-    borderRadius: 20,
-    padding: 28,
-    elevation: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.12,
-    shadowRadius: 16,
+    backgroundColor: colors.surface, marginHorizontal: 20, marginTop: -24,
+    borderRadius: 20, padding: 28, elevation: 8, shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.12, shadowRadius: 16,
   },
 
-  cardTitle: {
-    fontSize: 22,
-    fontWeight: "800",
-    color: colors.textPrimary,
-    marginBottom: 4,
-    textAlign: "center",
+  cardTitle:    { fontSize: 22, fontWeight: "800", color: colors.textPrimary, marginBottom: 4, textAlign: "center" },
+  cardSubtitle: { fontSize: 13, color: colors.textSecondary, marginBottom: 20, textAlign: "center" },
+
+  authErrorBanner: {
+    backgroundColor: "#FEF2F2", borderWidth: 1, borderColor: "#FECACA",
+    borderRadius: 10, padding: 12, marginBottom: 16,
   },
 
-  cardSubtitle: {
-    fontSize: 13,
-    color: colors.textSecondary,
-    marginBottom: 28,
-    textAlign: "center",
-  },
+  authErrorText: { fontSize: 13, color: colors.danger, fontWeight: "600", textAlign: "center", lineHeight: 18 },
 
-  // ── Campos ───────────────────────────────────────────
-  fieldWrapper: {
-    marginBottom: 18,
-  },
+  fieldWrapper: { marginBottom: 18 },
 
-  label: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: colors.textPrimary,
-    marginBottom: 8,
-  },
+  label: { fontSize: 13, fontWeight: "600", color: colors.textPrimary, marginBottom: 8 },
 
   inputRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 1.5,
-    borderColor: colors.border,
-    borderRadius: 12,
-    backgroundColor: colors.background,
-    paddingHorizontal: 14,
+    flexDirection: "row", alignItems: "center", borderWidth: 1.5, borderColor: colors.border,
+    borderRadius: 12, backgroundColor: colors.background, paddingHorizontal: 14,
     paddingVertical: Platform.OS === "ios" ? 14 : 0,
   },
 
-  inputRowError: {
-    borderColor: colors.danger,
-    backgroundColor: colors.dangerLight,
-  },
+  inputRowError: { borderColor: colors.danger, backgroundColor: colors.dangerLight },
+  inputIcon:     { fontSize: 16, marginRight: 10 },
+  input:         { flex: 1, fontSize: 15, color: colors.textPrimary, paddingVertical: Platform.OS === "android" ? 12 : 0 },
+  eyeIcon:       { fontSize: 16, paddingLeft: 8 },
+  errorText:     { color: colors.danger, fontSize: 12, marginTop: 6, fontWeight: "500" },
+  matchText:     { color: colors.secondary, fontSize: 12, marginTop: 6, fontWeight: "600" },
 
-  inputIcon: {
-    fontSize: 16,
-    marginRight: 10,
-  },
+  requirementsRow: { flexDirection: "row", gap: 12, marginTop: 8, flexWrap: "wrap" },
+  req:             { fontSize: 11, color: colors.textSecondary, fontWeight: "500" },
+  reqMet:          { color: colors.secondary, fontWeight: "700" },
 
-  input: {
-    flex: 1,
-    fontSize: 15,
-    color: colors.textPrimary,
-    paddingVertical: Platform.OS === "android" ? 12 : 0,
-  },
-
-  eyeIcon: {
-    fontSize: 16,
-    paddingLeft: 8,
-  },
-
-  errorText: {
-    color: colors.danger,
-    fontSize: 12,
-    marginTop: 6,
-    fontWeight: "500",
-  },
-
-  matchText: {
-    color: colors.secondary,
-    fontSize: 12,
-    marginTop: 6,
-    fontWeight: "600",
-  },
-
-  // ── Requisitos de contraseña ──────────────────────────
-  requirementsRow: {
-    flexDirection: "row",
-    gap: 12,
-    marginTop: 8,
-    flexWrap: "wrap",
-  },
-
-  req: {
-    fontSize: 11,
-    color: colors.textSecondary,
-    fontWeight: "500",
-  },
-
-  reqMet: {
-    color: colors.secondary,
-    fontWeight: "700",
-  },
-
-  // ── Botón ────────────────────────────────────────────
   btnPrimary: {
-    backgroundColor: colors.primary,
-    paddingVertical: 16,
-    borderRadius: 14,
-    alignItems: "center",
-    marginTop: 8,
-    elevation: 4,
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.35,
-    shadowRadius: 8,
+    backgroundColor: colors.primary, paddingVertical: 16, borderRadius: 14,
+    alignItems: "center", marginTop: 8, elevation: 4, shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.35, shadowRadius: 8,
   },
 
-  btnDisabled: {
-    backgroundColor: colors.textSecondary,
-    elevation: 0,
-    shadowOpacity: 0,
-  },
+  btnDisabled:    { backgroundColor: colors.textSecondary, elevation: 0, shadowOpacity: 0 },
+  btnPrimaryText: { color: "#FFFFFF", fontSize: 16, fontWeight: "700", letterSpacing: 0.5 },
 
-  btnPrimaryText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "700",
-    letterSpacing: 0.5,
-  },
+  loginRow:  { flexDirection: "row", justifyContent: "center", alignItems: "center", marginTop: 18 },
+  loginText: { fontSize: 13, color: colors.textSecondary },
+  loginLink: { fontSize: 13, color: colors.primary, fontWeight: "700" },
 
-  // ── Volver al login ───────────────────────────────────
-  loginRow: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 18,
-  },
+  footer: { textAlign: "center", fontSize: 11, color: colors.textSecondary, marginTop: 28, letterSpacing: 0.3 },
 
-  loginText: {
-    fontSize: 13,
-    color: colors.textSecondary,
-  },
-
-  loginLink: {
-    fontSize: 13,
-    color: colors.primary,
-    fontWeight: "700",
-  },
-
-  // ── Footer ───────────────────────────────────────────
-  footer: {
-    textAlign: "center",
-    fontSize: 11,
-    color: colors.textSecondary,
-    marginTop: 28,
-    letterSpacing: 0.3,
-  },
-
-  // ── Pantalla de éxito ─────────────────────────────────
-  successRoot: {
-    flex: 1,
-    backgroundColor: colors.primary,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 32,
-  },
-
-  successCard: {
-    backgroundColor: colors.surface,
-    borderRadius: 24,
-    padding: 40,
-    alignItems: "center",
-    width: "100%",
-    elevation: 12,
-  },
-
-  successIconWrapper: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: colors.secondaryLight,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 20,
-  },
-
-  successIcon: {
-    fontSize: 36,
-    color: colors.secondary,
-    fontWeight: "900",
-  },
-
-  successTitle: {
-    fontSize: 24,
-    fontWeight: "900",
-    color: colors.textPrimary,
-    marginBottom: 12,
-  },
-
-  successSubtitle: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    textAlign: "center",
-    lineHeight: 22,
-  },
-
+  successRoot: { flex: 1, backgroundColor: colors.primary, justifyContent: "center", alignItems: "center", padding: 32 },
+  successCard: { backgroundColor: colors.surface, borderRadius: 24, padding: 40, alignItems: "center", width: "100%", elevation: 12 },
+  successIconWrapper: { width: 80, height: 80, borderRadius: 40, backgroundColor: colors.secondaryLight, justifyContent: "center", alignItems: "center", marginBottom: 20 },
+  successIcon:    { fontSize: 36, color: colors.secondary, fontWeight: "900" },
+  successTitle:   { fontSize: 24, fontWeight: "900", color: colors.textPrimary, marginBottom: 12 },
+  successSubtitle: { fontSize: 14, color: colors.textSecondary, textAlign: "center", lineHeight: 22 },
 });
 
 export default CreateAccountScreen;
-
