@@ -1,17 +1,21 @@
 // src/context/TaskContext.jsx
-// Contexto global de tareas con persistencia local mediante AsyncStorage
-// Criterio 4 — Persistencia local con AsyncStorage
+// Almacenamiento de tareas por usuario — cada cuenta tiene su propio storage
+// Clave: @kronotask_tasks_<userId>
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { useAuth } from "./AuthContext";
 
 const TaskContext = createContext(null);
 
-// Clave de almacenamiento en AsyncStorage
-const STORAGE_KEY = "@kronotask_tasks";
-
-// ── Tareas iniciales de muestra ────────────────────────────
-// Solo se usan la primera vez que se instala la app (si AsyncStorage está vacío)
+// ── Tareas de muestra (solo para cuentas nuevas) ──────────
 const INITIAL_TASKS = [
   {
     id: "1",
@@ -67,92 +71,113 @@ const INITIAL_TASKS = [
 
 // ─────────────────────────────────────────────────────────
 const TaskProvider = ({ children }) => {
+  const { currentUser } = useAuth();
+
+  // Clave única por usuario — cada cuenta tiene su propio storage
+  const userId     = currentUser?.id ?? "guest";
+  const storageKey = `@kronotask_tasks_${userId}`;
+
   const [tasks,          setTasks]          = useState([]);
   const [storageLoading, setStorageLoading] = useState(true);
   const [storageError,   setStorageError]   = useState(null);
 
-  // ── useEffect: cargar tareas desde AsyncStorage al iniciar ──
+  // Ref para evitar guardar durante el cambio de usuario
+  const isLoadingRef = useRef(true);
+
+  // ── useEffect: cargar tareas al cambiar de usuario ────────
   useEffect(() => {
+    let cancelled = false;
+
     const loadTasks = async () => {
+      isLoadingRef.current = true;
+      setStorageLoading(true);
+      setTasks([]);
+
       try {
-        const stored = await AsyncStorage.getItem(STORAGE_KEY);
+        const stored = await AsyncStorage.getItem(storageKey);
+
+        if (cancelled) return;
 
         if (stored !== null) {
-          // Hay tareas guardadas — las cargamos
-          const parsed = JSON.parse(stored);
-          setTasks(parsed);
+          // Cuenta existente — cargar sus tareas guardadas
+          setTasks(JSON.parse(stored));
         } else {
-          // Primera vez — guardamos las tareas iniciales
-          await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_TASKS));
+          // Cuenta nueva — inicializar con tareas de muestra
+          const defaultTasks = currentUser?.isAdmin ? INITIAL_TASKS : [];
+          await AsyncStorage.setItem(
+            storageKey,
+            JSON.stringify(defaultTasks)
+          );
+          setTasks(defaultTasks);
+        }
+      } catch {
+        if (!cancelled) {
+          setStorageError("No se pudieron cargar las tareas guardadas.");
           setTasks(INITIAL_TASKS);
         }
-      } catch (err) {
-        setStorageError("No se pudieron cargar las tareas guardadas.");
-        setTasks(INITIAL_TASKS);
-      } finally {
-        setStorageLoading(false);
+      } finally { 
+        if (!cancelled) {
+          isLoadingRef.current = false;
+          setStorageLoading(false);
+        }
       }
     };
 
     loadTasks();
-  }, []);
 
-  // ── useEffect: guardar tareas en AsyncStorage al cambiar ──
-  // Solo se ejecuta cuando tasks cambia Y ya terminó la carga inicial
+    // Cleanup: ignorar resultados si el userId cambió antes de terminar
+    return () => { cancelled = true; };
+  }, [storageKey, userId]);
+
+  // ── useEffect: guardar tareas al cambiar ──────────────────
   useEffect(() => {
-    if (storageLoading) return;
+    // No guardar mientras se está cargando o cambiando de usuario
+    if (storageLoading || isLoadingRef.current) return;
 
     const saveTasks = async () => {
       try {
-        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
-      } catch (err) {
+        await AsyncStorage.setItem(storageKey, JSON.stringify(tasks));
+      } catch {
         setStorageError("No se pudieron guardar los cambios.");
       }
     };
 
     saveTasks();
-  }, [tasks, storageLoading]);
+  }, [tasks, storageLoading, storageKey]);
 
-  // ── Agregar tarea ─────────────────────────────────────────
+  // ── CRUD de tareas ────────────────────────────────────────
+  
   const addTask = useCallback((task) => {
     setTasks((prev) => [task, ...prev]);
   }, []);
-
-  // ── Actualizar tarea ──────────────────────────────────────
+  
   const updateTask = useCallback((updatedTask) => {
     setTasks((prev) =>
-      prev.map((task) =>
-        task.id === updatedTask.id ? { ...task, ...updatedTask } : task
+      prev.map((t) =>
+        t.id === updatedTask.id ? { ...t, ...updatedTask } : t
       )
     );
   }, []);
-
-  // ── Eliminar tarea ────────────────────────────────────────
+  
   const removeTask = useCallback((taskId) => {
-    setTasks((prev) => prev.filter((task) => task.id !== taskId));
+    setTasks((prev) => prev.filter((t) => t.id !== taskId));
   }, []);
-
-  // ── Cambiar estado de tarea ───────────────────────────────
+  
   const toggleTaskStatus = useCallback((taskId) => {
     setTasks((prev) =>
-      prev.map((task) =>
-        task.id === taskId
-          ? {
-              ...task,
-              status: task.status === "completed" ? "pending" : "completed",
-            }
-          : task
+      prev.map((t) =>
+        t.id === taskId
+          ? { ...t, status: t.status === "completed" ? "pending" : "completed" }
+          : t
       )
     );
   }, []);
-
-  // ── Obtener tarea por ID ──────────────────────────────────
+  
   const getTaskById = useCallback(
-    (taskId) => tasks.find((task) => task.id === taskId),
+    (taskId) => tasks.find((t) => t.id === taskId),
     [tasks]
   );
-
-  // ── Limpiar error de storage ──────────────────────────────
+  
   const clearStorageError = useCallback(() => setStorageError(null), []);
 
   return (
@@ -183,3 +208,4 @@ const useTasks = () => {
 };
 
 export { TaskProvider, useTasks };
+

@@ -1,4 +1,5 @@
 // src/screens/LoginScreen.jsx
+import { Ionicons } from "@expo/vector-icons";
 import { useRef, useState } from "react";
 import {
   Animated,
@@ -84,7 +85,7 @@ const LoginScreen = ({ navigation }) => {
       setIsLoading(false);
 
       if (result.success) {
-        navigation.replace("Home");
+        // AppNavigator redirige automáticamente al detectar currentUser
       } else {
         // Mostrar error de credenciales y animar shake
         setAuthError(result.error);
@@ -181,7 +182,7 @@ const LoginScreen = ({ navigation }) => {
                 onPress={() => setShowPass(!showPass)}
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               >
-                <Text style={styles.eyeIcon}>{showPass ? "🙈" : "👁️"}</Text>
+                <Ionicons name={showPass ? "eye-off-outline" : "eye-outline"} size={22} color={colors.textSecondary}/>
               </TouchableOpacity>
             </View>
             {errors.password
@@ -328,9 +329,7 @@ const styles = StyleSheet.create({
     flex: 1, fontSize: 15, color: colors.textPrimary,
     paddingVertical: Platform.OS === "android" ? 12 : 0,
   },
-
-  eyeIcon: { fontSize: 16, paddingLeft: 8 },
-
+  
   errorText: { color: colors.danger, fontSize: 12, marginTop: 6, fontWeight: "500" },
 
   btnPrimary: {

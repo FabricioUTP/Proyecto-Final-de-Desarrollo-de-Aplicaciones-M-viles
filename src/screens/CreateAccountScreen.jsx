@@ -1,4 +1,5 @@
 // src/screens/CreateAccountScreen.jsx
+import { Ionicons } from "@expo/vector-icons";
 import { useRef, useState } from "react";
 import {
   Animated,
@@ -122,7 +123,7 @@ const CreateAccountScreen = ({ navigation }) => {
         // Mostrar pantalla de éxito y navegar al Home
         setSuccess(true);
         triggerSuccess();
-        setTimeout(() => navigation.replace("Home"), 1400);
+        // AppNavigator redirige automáticamente — no necesita navigation.replace
       } else {
         // Mostrar error (ej: correo duplicado)
         setAuthError(result.error);
@@ -284,7 +285,7 @@ const CreateAccountScreen = ({ navigation }) => {
                 onPress={() => setShowPass(!showPass)}
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               >
-                <Text style={styles.eyeIcon}>{showPass ? "🙈" : "👁️"}</Text>
+                <Ionicons name={showPass ? "eye-off-outline" : "eye-outline"} size={22} color={colors.textSecondary}/>
               </TouchableOpacity>
             </View>
             {errors.password ? <Text style={styles.errorText}>⚠ {errors.password}</Text> : null}
@@ -322,7 +323,7 @@ const CreateAccountScreen = ({ navigation }) => {
                 onPress={() => setShowConfirm(!showConfirm)}
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               >
-                <Text style={styles.eyeIcon}>{showConfirm ? "🙈" : "👁️"}</Text>
+                <Ionicons name={showPass ? "eye-off-outline" : "eye-outline"} size={22} color={colors.textSecondary}/>
               </TouchableOpacity>
             </View>
             {errors.confirmPassword
@@ -416,8 +417,7 @@ const styles = StyleSheet.create({
 
   inputRowError: { borderColor: colors.danger, backgroundColor: colors.dangerLight },
   inputIcon:     { fontSize: 16, marginRight: 10 },
-  input:         { flex: 1, fontSize: 15, color: colors.textPrimary, paddingVertical: Platform.OS === "android" ? 12 : 0 },
-  eyeIcon:       { fontSize: 16, paddingLeft: 8 },
+  input:         { flex: 1, fontSize: 15, color: colors.textPrimary, paddingVertical: Platform.OS === "android" ? 12 : 0 }, 
   errorText:     { color: colors.danger, fontSize: 12, marginTop: 6, fontWeight: "500" },
   matchText:     { color: colors.secondary, fontSize: 12, marginTop: 6, fontWeight: "600" },
 

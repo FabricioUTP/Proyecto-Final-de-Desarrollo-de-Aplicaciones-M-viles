@@ -178,7 +178,7 @@ npx expo install react-native-screens react-native-safe-area-context
 ### Paso 5 — Instalar dependencias complementarias
 
 ```bash
-# Íconos vectoriales (incluido en Expo)
+# Íconos vectoriales
 npx expo install @expo/vector-icons
 
 # Manejo de fuentes personalizadas (opcional pero recomendado)

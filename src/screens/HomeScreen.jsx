@@ -40,15 +40,19 @@ const HomeScreen = ({ navigation }) => {
 
   // ── useEffect: animación de entrada ──────────────────────
   useEffect(() => {
-    Animated.parallel([
-      Animated.timing(headerAnim, {
-        toValue: 1, duration: 500, useNativeDriver: true,
-      }),
-      Animated.timing(fabAnim, {
-        toValue: 1, duration: 600, delay: 300, useNativeDriver: true,
-      }),
-    ]).start();
-  }, []);
+    if (!storageLoading) {
+      headerAnim.setValue(0);
+      fabAnim.setValue(0);
+      Animated.parallel([
+        Animated.timing(headerAnim, {
+          toValue: 1, duration: 500, useNativeDriver: true,
+        }),
+        Animated.timing(fabAnim, {
+          toValue: 1, duration: 600, delay: 300, useNativeDriver: true,
+        }),
+      ]).start();
+    }
+  }, [storageLoading]);
 
   // ── Filtrado de tareas ────────────────────────────────────
   const filteredTasks = useMemo(() =>
