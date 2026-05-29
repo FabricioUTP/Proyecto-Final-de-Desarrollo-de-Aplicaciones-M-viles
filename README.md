@@ -1,4 +1,5 @@
-# 📋 KronoTask
+﻿# 📋 KronoTask
+
 ### Aplicación Móvil de Gestión de Tareas Empresariales
 
 <p align="center">
@@ -13,360 +14,203 @@
 
 ## 📌 Descripción del Proyecto
 
-**KronoTask** es una aplicación móvil multiplataforma orientada a la gestión de tareas dentro de un entorno empresarial. Permite a los usuarios organizar, visualizar y dar seguimiento a sus actividades diarias de manera eficiente, facilitando la productividad y el control operativo.
+**KronoTask** es una aplicación móvil multiplataforma diseñada para la gestión de tareas dentro de un entorno empresarial. Ofrece un flujo completo de trabajo para usuarios que necesitan crear, administrar y seguir el progreso de sus tareas de manera organizada.
 
-Desarrollada con **React Native** y **Expo**, la aplicación implementa buenas prácticas en estructuración de código, diseño responsivo y organización de componentes, con un flujo de navegación claro e intuitivo.
+Implementada con **React Native** y **Expo**, la aplicación presenta una estructura modular, navegación fluida, almacenamiento local por usuario y un directorio de equipo con datos externos simulados.
+
+---
+
+## ⚡ Funcionalidades principales
+
+- Autenticación con registro de usuarios y login.
+- Persistencia de sesión usando `AsyncStorage`.
+- CRUD completo de tareas: crear, leer, editar, marcar como completada/pendiente y eliminar.
+- Dashboard con métricas de tareas totales, pendientes y completadas.
+- Filtros de tareas por estado.
+- Directorio de equipo con consumo de API externa y manejo de estados de carga, error y vacío.
+- Interfaz con animaciones, tarjetas y feedback visual.
 
 ---
 
 ## 👥 Equipo de Desarrollo
 
-| # | Nombre Completo | Rol |
-|---|---|---|
-| 1 | Fabricio Manuel Munives Santamaría | Desarrollador Mobile / Frontend / Backend / DB|
-| 2 | Elmer Diego Falla Samaniego | Desarrollador Mobile / Frontend / Backend / DB|
-
----
-
-## 🎨 Paleta de Colores
-
-La paleta fue seleccionada para transmitir profesionalismo, claridad visual y buena legibilidad en entornos empresariales.
-
-| Token | Color | Hex | Uso |
-|---|---|---|---|
-| `primary` | 🟣 Índigo | `#4F46E5` | Botones principales, headers, badges activos |
-| `primaryDark` | 🟣 Índigo oscuro | `#3730A3` | Hover y estados presionados |
-| `secondary` | 🟢 Esmeralda | `#10B981` | Tareas completadas, confirmaciones |
-| `background` | ⚪ Gris claro | `#F9FAFB` | Fondo general de pantallas |
-| `surface` | ⚪ Blanco | `#FFFFFF` | Cards, formularios, modales |
-| `textPrimary` | ⚫ Gris oscuro | `#111827` | Títulos y texto principal |
-| `textSecondary` | 🩶 Gris medio | `#6B7280` | Subtítulos, placeholders |
-| `border` | 🩶 Gris borde | `#E5E7EB` | Bordes de inputs y separadores |
-| `danger` | 🔴 Rojo | `#EF4444` | Errores, eliminar, alertas |
-| `warning` | 🟡 Ámbar | `#F59E0B` | Prioridad media, advertencias |
+| #   | Nombre Completo                    | Rol                                            |
+| --- | ---------------------------------- | ---------------------------------------------- |
+| 1   | Fabricio Manuel Munives Santamaría | Desarrollador Mobile / Frontend / Backend / DB |
+| 2   | Elmer Diego Falla Samaniego        | Desarrollador Mobile / Frontend / Backend / DB |
 
 ---
 
 ## 🛠️ Tecnologías y Lenguajes
 
-| Tecnología | Versión | Descripción |
-|---|---|---|
-| **React Native** | 0.76+ | Framework principal para desarrollo móvil multiplataforma |
-| **Expo** | SDK 52+ | Entorno de desarrollo y herramienta de build |
-| **JavaScript (ES6+)** | — | Lenguaje principal de programación |
-| **JSX** | — | Extensión de sintaxis para la definición de interfaces |
-| **CSS-in-JS (StyleSheet)** | — | Estilos mediante la API nativa de React Native |
-| **React Navigation** | v6 | Navegación entre pantallas |
+| Tecnología        | Versión  | Descripción                          |
+| ----------------- | -------- | ------------------------------------ |
+| React Native      | 0.81.5   | Framework principal de la app móvil  |
+| Expo              | ~54.0.33 | Plataforma de desarrollo y ejecución |
+| JavaScript (ES6+) | —        | Lenguaje principal                   |
+| JSX               | —        | Sintaxis de UI para React            |
+| React Navigation  | ^7.14.11 | Navegación entre pantallas           |
+| AsyncStorage      | 2.2.0    | Persistencia local de datos          |
 
 ---
 
-## 💻 Entorno de Desarrollo
-
-| Herramienta | Descripción |
-|---|---|
-| **Visual Studio Code** | Editor de código principal |
-| **Expo Go** | App para previsualización en dispositivo físico |
-| **Android Emulator** | Emulador de dispositivo Android (Android Studio) |
-| **Git + GitHub** | Control de versiones y repositorio remoto |
-| **Node.js** | Entorno de ejecución necesario para Expo y npm |
-
-### Extensiones recomendadas para VS Code
-
-| Extensión | ID | Descripción |
-|---|---|---|
-| ES7+ React/Redux Snippets | `dsznajder.es7-react-js-snippets` | Snippets para componentes React Native |
-| Prettier | `esbenp.prettier-vscode` | Formateador de código automático |
-| ESLint | `dbaeumer.vscode-eslint` | Linter para mantener buenas prácticas |
-| React Native Tools | `msjsdiag.vscode-react-native` | Soporte oficial de debugging para RN |
-| GitLens | `eamodio.gitlens` | Visualización avanzada del historial Git |
-| Auto Rename Tag | `formulahendry.auto-rename-tag` | Renombra etiquetas JSX automáticamente |
-| Material Icon Theme | `PKief.material-icon-theme` | Íconos visuales para archivos y carpetas |
-
----
-
-## 📁 Estructura del Proyecto (Primer Avance)
+## 📁 Estructura del Proyecto
 
 ```
-KronoTask/
+Proyecto-Final-de-Desarrollo-de-Aplicaciones-M-viles/
 │
-├── assets/                        # Recursos estáticos (imágenes, íconos, splash)
+├── assets/                        # Recursos gráficos e imágenes
 │   └── images/
 │
 ├── src/
-│   ├── components/                   # Componentes reutilizables
-│   │   └── TaskCard.jsx              # Tarjeta de tarea con props
+│   ├── components/                # Componentes reutilizables
+│   │   ├── TaskCard.jsx           # Tarjeta de tarea
+│   │   └── UserMenuButton.jsx     # Botón de menú de usuario
 │   │
-│   ├── context/                      # Manejo de estado global de la aplicación
-│   │   └── TaskContext.jsx           # Contexto de tareas
+│   ├── context/                   # Manejo de estado global
+│   │   ├── AuthContext.jsx        # Autenticación y sesión
+│   │   └── TaskContext.jsx        # CRUD de tareas y persistencia
 │   │
-│   ├── screens/                      # Pantallas de la aplicación
-│   │   ├── LoginScreen.jsx           # Pantalla de inicio de sesión
-│   │   ├── CreateAccountScreen.jsx   # Pantalla de registro de usuario
-│   │   ├── HomeScreen.jsx            # Dashboard principal con lista de tareas
-│   │   ├── CreateTaskScreen.jsx      # Formulario para crear nueva tarea
-│   │   └── TaskDetailScreen.jsx      # Detalle y gestión de una tarea
+│   ├── hooks/                     # Hooks personalizados
+│   │   └── useApi.js              # Hook para requests con estados
 │   │
-│   ├── navigation/                   # Configuración de navegación
-│   │   └── AppNavigator.jsx          # Stack Navigator principal
+│   ├── navigation/                # Configuración de rutas
+│   │   └── AppNavigator.jsx       # Navegación principal
 │   │
-│   └── theme/                        # Estilos y tokens globales
-│       └── colors.js                 # Paleta de colores centralizada
+│   ├── screens/                   # Pantallas principales
+│   │   ├── LoginScreen.jsx
+│   │   ├── CreateAccountScreen.jsx
+│   │   ├── HomeScreen.jsx
+│   │   ├── CreateTaskScreen.jsx
+│   │   ├── TaskDetailScreen.jsx
+│   │   └── TeamScreen.jsx
+│   │
+│   └── theme/                     # Paleta y estilos globales
+│       └── colors.js
 │
-├── App.jsx                           # Punto de entrada de la aplicación
-├── app.json                          # Configuración de Expo
-├── package.json                      # Dependencias del proyecto
-└── README.md                         # Documentación del proyecto
+├── App.jsx                        # Punto de entrada
+├── app.json                       # Configuración de Expo
+├── package.json                   # Dependencias y scripts
+└── README.md                      # Documentación del proyecto
 ```
 
 ---
 
-## ⚙️ Instalación y Configuración
+## 📌 Pantallas principales
 
-### Prerrequisitos
+### 🔐 Login
 
-Asegúrate de tener instalados los siguientes programas antes de continuar:
+- `src/screens/LoginScreen.jsx`
+- Formulario con validación de correo y contraseña.
+- Mensajes de error y animación de feedback.
+- Acceso a la app al iniciar sesión.
 
-- [Node.js](https://nodejs.org/) (versión LTS recomendada, 18+)
-- [Visual Studio Code](https://code.visualstudio.com/)
-- [Git](https://git-scm.com/)
-- Cuenta en [Expo](https://expo.dev/) (gratuita)
-- App **Expo Go** instalada en tu dispositivo móvil
+### 🧑‍💼 Registro
+
+- `src/screens/CreateAccountScreen.jsx`
+- Registro de usuario con nombre, cargo, email y contraseña.
+- Validaciones de entradas y verificación de contraseñas.
+- Persistencia de la nueva cuenta y sesión automática.
+
+### 🏠 Dashboard de tareas
+
+- `src/screens/HomeScreen.jsx`
+- Lista de tareas con filtrado por estado.
+- Estadísticas de tareas totales, pendientes y completadas.
+- Navegación al detalle y al directorio de equipo.
+
+### ✏️ Crear / editar tarea
+
+- `src/screens/CreateTaskScreen.jsx`
+- Formulario para nueva tarea o edición de una existente.
+- Selección de categoría, prioridad y descripción.
+- Validaciones de campos y vista previa.
+
+### 📄 Detalle de tarea
+
+- `src/screens/TaskDetailScreen.jsx`
+- Información completa de la tarea.
+- Cambio de estado pendiente/completada.
+- Edición desde el detalle.
+- Eliminación con confirmación.
+
+### 👥 Directorio de equipo
+
+- `src/screens/TeamScreen.jsx`
+- Consumo de API externa para miembros y tareas.
+- Estados de carga, error y vacío.
+- Detalle de perfil de miembro.
 
 ---
 
-### Paso 1 — Verificar instalación de Node.js y npm
+## ⚡ Características principales
+
+- Autenticación real con gestión de sesión.
+- CRUD de tareas completamente funcional.
+- Edición de tareas desde el detalle.
+- Almacenamiento local independiente por usuario.
+- Navegación con React Navigation.
+- Presentación visual cuidada con animaciones.
+
+---
+
+## 🚀 Instalación y ejecución
 
 ```bash
-node --version
-npm --version
+git clone https://github.com/FabricioUTP/Proyecto-Final-de-Desarrollo-de-Aplicaciones-M-viles.git
+cd Proyecto-Final-de-Desarrollo-de-Aplicaciones-M-viles
+npm install
+npm start
 ```
 
----
-
-### Paso 2 — Instalar Expo CLI de forma global
+Para abrir en plataformas específicas:
 
 ```bash
-npm install -g expo-cli
+npm run android
+npm run ios
+npm run web
 ```
 
-Verificar instalación:
-
-```bash
-expo --version
-```
+> `npm run ios` requiere macOS.
 
 ---
 
-### Paso 3 — Crear el proyecto con Expo
+## 🧪 Scripts disponibles
 
-```bash
-npx create-expo-app@latest proyectoApp
-cd proyectoApp
-```
-
----
-
-### Paso 4 — Instalar dependencias de navegación
-
-```bash
-npx expo install @react-navigation/native @react-navigation/native-stack
-npx expo install react-native-screens react-native-safe-area-context
-```
+| Script            | Descripción                    |
+| ----------------- | ------------------------------ |
+| `npm start`       | Inicia Expo en modo desarrollo |
+| `npm run android` | Abre la app en Android         |
+| `npm run ios`     | Abre la app en iOS (macOS)     |
+| `npm run web`     | Ejecuta la app en navegador    |
+| `npm run lint`    | Ejecuta el linter de Expo      |
 
 ---
 
-### Paso 5 — Instalar dependencias complementarias
+## 📌 Nota técnica
 
-```bash
-# Íconos vectoriales
-npx expo install @expo/vector-icons
-
-# Manejo de fuentes personalizadas (opcional pero recomendado)
-npx expo install expo-font
-
-# Almacenamiento local (para el Avance 2)
-npx expo install @react-native-async-storage/async-storage
-```
+- El estado de autenticación y las tareas se guardan en `AsyncStorage`.
+- El directorio de equipo consume datos desde `JSONPlaceholder`.
+- `useApi.js` centraliza la gestión de peticiones con `loading`, `error` y `data`.
+- El formulario de tareas puede crear o editar según reciba `taskId`.
 
 ---
 
-### Paso 6 — Ejecutar la aplicación
+## ✅ Estado actual
 
-```bash
-npx expo start
-```
+La aplicación cuenta con:
 
-Luego elige una de las siguientes opciones en la terminal:
-
-| Tecla | Acción |
-|---|---|
-| `a` | Abrir en emulador Android |
-| `i` | Abrir en simulador iOS (solo Mac) |
-| `w` | Abrir en navegador web |
-| Escanear QR | Visualizar en dispositivo físico con Expo Go |
+- CRUD completo de tareas.
+- Autenticación y persistencia de sesión.
+- Navegación entre todas las pantallas principales.
+- Consumo de API externa y manejo completo de estados.
+- Diseño visual coherente con experiencia móvil.
 
 ---
 
-## 📱 Vistas — Avance 1 (Semana 5)
+## 📚 Referencias clave
 
-Este primer avance cuenta con **5 pantallas** funcionales conectadas mediante navegación con React Navigation.
-
----
-
-### 1. 🔐 Pantalla de login
-**Archivo:** `src/screens/LoginScreen.js`
-
-Pantalla de inicio de sesión empresarial. Implementa un formulario con validaciones en tiempo real.
-
-| Elemento | Detalle |
-|---|---|
-| Campos | Correo corporativo y contraseña |
-| Validaciones | Campo vacío, formato de email, mínimo 6 caracteres, al menos 1 mayúscula y 1 número |
-| Retroalimentación | Mensajes de error visibles, animación de shake al error |
-| Show/hide | Botón para mostrar u ocultar contraseña |
-| Navegación | Redirige al Home al ingresar credenciales válidas |
-| Componentes | `TextInput`, `TouchableOpacity`, `KeyboardAvoidingView`, `ScrollView`, `Image`, `Animated` |
-
----
-
-### 2. 👤 Pantalla de crear cuenta
-**Archivo:** `src/screens/CreateAccountScreen.jsx`
-
-Formulario de registro empresarial con validaciones avanzadas en tiempo real.
-
-| Elemento | Detalle |
-|---|---|
-| Campos | Nombre completo, cargo en la empresa, correo corporativo, contraseña y confirmar contraseña |
-| Validaciones | Campos obligatorios, solo letras en nombre, formato de email, mínimo 6 caracteres, al menos 1 mayúscula y 1 número en contraseña, coincidencia de contraseñas |
-| Retroalimentación | Mensajes de error visibles, indicador de requisitos de contraseña en tiempo real, confirmación verde al coincidir contraseñas |
-| Animaciones | Shake del formulario al error, animación de éxito al crear cuenta |
-| Show/hide | Botón para mostrar u ocultar contraseña en ambos campos |
-| Navegación | Redirige al Home al crear cuenta exitosamente |
-| Componentes | `TextInput`, `TouchableOpacity`, `KeyboardAvoidingView`, `ScrollView`, `Image`, `Animated` |
-
----
-
-### 3. 🏠 Pantalla principal (Dashboard)
-**Archivo:** `src/screens/HomeScreen.js`
-
-Panel principal de la aplicación. Muestra la lista de tareas del usuario con opciones de filtrado y un contador de progreso.
-
-| Elemento | Detalle |
-|---|---|
-| Barra superior | Logo y nombre de la app a la izquierda, avatar y nombre del usuario a la derecha |
-| Lista dinámica | Renderizada con `FlatList` y estado `useState` |
-| Filtros | Todas / Pendientes / Completadas |
-| Estadísticas | Cards con total, pendientes y completadas |
-| Progreso | Barra animada con porcentaje de tareas completadas |
-| Acciones | Cambiar estado de tarea directamente desde la lista |
-| Navegación | Accede a Crear Tarea (FAB) y Detalle de Tarea (tap en card) |
-| Componentes | `FlatList`, `TouchableOpacity`, `Image`, `Animated`, `TaskCard` |
-
----
-
-### 4. ✏️ Pantalla de crear tarea
-**Archivo:** `src/screens/CreateTaskScreen.js`
-
-Formulario interactivo para registrar nuevas tareas con validaciones y selección de prioridad.
-
-| Elemento | Detalle |
-|---|---|
-| Campos | Título (máx. 80 caracteres) y descripción (máx. 300 caracteres) |
-| Validaciones | Campos obligatorios, mínimo 5 caracteres en título y 10 en descripción |
-| Categoría | Selector visual: 💼 Comercial / 🎨 Diseño / 💻 Desarrollo / 📊 Gestión / 📣 Marketing / 🛠️ Soporte |
-| Prioridad | Selector visual: 🔴 Alta / 🟡 Media / 🟢 Baja |
-| Vista previa | Previsualización en tiempo real de la tarea mientras se escribe |
-| Animaciones | Shake al error, animación de entrada del formulario, botón animado |
-| Componentes | `TextInput`, `TouchableOpacity`, `ScrollView`, `KeyboardAvoidingView`, `Image`, `Animated` |
-
----
-
-### 5. 🔍 Pantalla de detalle de tarea
-**Archivo:** `src/screens/TaskDetailScreen.js`
-
-Vista detallada de una tarea seleccionada. Permite cambiar su estado o eliminarla.
-
-| Elemento | Detalle |
-|---|---|
-| Información | Título, descripción, estado, prioridad, categoría y fecha de creación |
-| Header dinámico | Cambia de color índigo a verde según el estado de la tarea |
-| Metadatos | Cards con prioridad, fecha de creación y categoría |
-| Barra de estado | Indicador visual del flujo: Creada → En curso / Completada |
-| Acciones | Marcar como completada / pendiente (`TouchableOpacity`) y eliminar tarea (`Button`) |
-| Animaciones | Fade + slide de entrada, animación del botón de acción |
-| Componentes | `ScrollView`, `TouchableOpacity`, `Button`, `Image`, `Animated`, `Alert` |
-
----
-
-### Flujo de navegación
-
-```
-LoginScreen
-    ├──▶ CreateAccountScreen ──▶ HomeScreen
-    └──▶ HomeScreen
-              ├──▶ CreateTaskScreen ──▶ (regresa al Home)
-              └──▶ TaskDetailScreen ──▶ (regresa al Home)
-```
-
----
-
-## 🗺️ Roadmap del Proyecto
-
-| Avance | Contenido | Estado |
-|---|---|---|
-| **Avance 1** | Estructura, interfaz, navegación, formularios con validaciones | ✅ Completado |
-| **Avance 2** | (Todavía no hay tareas asignadas) | 🔜 Pendiente |
-| **Avance 3** | (Todavía no hay tareas asignadas) | 🔜 Pendiente |
-
----
-
-## 📸 Capturas de Pantalla
-
-A continuación se muestran las principales vistas de la aplicación **KronoTask**, correspondientes a las pantallas desarrolladas en el Avance 1.
-
----
-
-### 🔐 Pantalla de inicio de sesión
-
-<p align="center">
-  <img src="./assets/images/login.png" width="300" />
-</p>
-
----
-
-### 👤 Pantalla de crear cuenta
-<p align="center">
-  <img src="./assets/images/crearCuenta.png" width="300" />
-</p>
-
----
-
-### 🏠 Pantalla principal (Dashboard)
-
-<p align="center">
-  <img src="./assets/images/home.png" width="300" />
-</p>
-
----
-
-### ✏️ Pantalla de creación de tarea
-
-<p align="center">
-  <img src="./assets/images/crearTarea.png" width="300" />
-</p>
-
----
-
-### 🔍 Pantalla de detalle de tarea
-
-<p align="center">
-  <img src="./assets/images/detalleTarea.png" width="300" />
-</p>
-
----
-
-## 📄 Licencia
-
-Este proyecto fue desarrollado con fines académicos para el curso de Desarrollo de Aplicaciones Móviles.
-
----
+- `src/context/AuthContext.jsx` — gestión de autenticación.
+- `src/context/TaskContext.jsx` — CRUD y persistencia de tareas.
+- `src/screens/CreateTaskScreen.jsx` — creación y edición de tareas.
+- `src/screens/TeamScreen.jsx` — consumo de API externa.

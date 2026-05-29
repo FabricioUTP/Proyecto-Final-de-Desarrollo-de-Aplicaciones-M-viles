@@ -1,61 +1,100 @@
 import React, { useRef, useState } from "react";
 import {
-  Animated,
-  Image,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    Animated,
+    Image,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    StatusBar,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { useTasks } from "../context/TaskContext";
 import { colors } from "../theme/colors";
 
 const CATEGORY_OPTIONS = [
-  { key: "Comercial",   icon: "💼" },
-  { key: "Diseño",      icon: "🎨" },
-  { key: "Desarrollo",  icon: "💻" },
-  { key: "Gestión",     icon: "📊" },
-  { key: "Marketing",   icon: "📣" },
-  { key: "Soporte",     icon: "🛠️" },
+  { key: "Comercial", icon: "💼" },
+  { key: "Diseño", icon: "🎨" },
+  { key: "Desarrollo", icon: "💻" },
+  { key: "Gestión", icon: "📊" },
+  { key: "Marketing", icon: "📣" },
+  { key: "Soporte", icon: "🛠️" },
 ];
 
 const PRIORITY_OPTIONS = [
-  { key: "high",   label: "Alta",  color: colors.priorityHigh, bg: "#FEE2E2", icon: "🔴" },
-  { key: "medium", label: "Media", color: colors.priorityMed,  bg: "#FEF3C7", icon: "🟡" },
-  { key: "low",    label: "Baja",  color: colors.priorityLow,  bg: colors.secondaryLight, icon: "🟢" },
+  {
+    key: "high",
+    label: "Alta",
+    color: colors.priorityHigh,
+    bg: "#FEE2E2",
+    icon: "🔴",
+  },
+  {
+    key: "medium",
+    label: "Media",
+    color: colors.priorityMed,
+    bg: "#FEF3C7",
+    icon: "🟡",
+  },
+  {
+    key: "low",
+    label: "Baja",
+    color: colors.priorityLow,
+    bg: colors.secondaryLight,
+    icon: "🟢",
+  },
 ];
 
 const formatCreatedAt = () => {
   const date = new Date();
   return date
-    .toLocaleDateString("es-PE", { day: "2-digit", month: "short", year: "numeric" })
+    .toLocaleDateString("es-PE", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    })
     .replace(/\./g, "")
     .replace(/\s+/g, " ");
 };
 
-const CreateTaskScreen = ({ navigation }) => {
-  const { addTask } = useTasks();
+const CreateTaskScreen = ({ route, navigation }) => {
+  const { addTask, updateTask, getTaskById } = useTasks();
+  const taskId = route?.params?.taskId ?? null;
+  const isEditMode = Boolean(taskId);
+  const taskToEdit = React.useMemo(
+    () => (taskId ? getTaskById(taskId) : null),
+    [taskId, getTaskById],
+  );
 
-  const [title,       setTitle]       = useState("");
+  const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [category,    setCategory]    = useState("Comercial");
-  const [priority,    setPriority]    = useState("medium");
-  const [errors,      setErrors]      = useState({});
-  const [isLoading,   setIsLoading]   = useState(false);
+  const [category, setCategory] = useState("Comercial");
+  const [priority, setPriority] = useState("medium");
+  const [errors, setErrors] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+
+  React.useEffect(() => {
+    if (taskToEdit) {
+      setTitle(taskToEdit.title);
+      setDescription(taskToEdit.description);
+      setCategory(taskToEdit.category);
+      setPriority(taskToEdit.priority);
+    }
+  }, [taskToEdit]);
 
   // ── Animaciones ────────────────────────────────────────
-  const shakeAnim   = useRef(new Animated.Value(0)).current;
+  const shakeAnim = useRef(new Animated.Value(0)).current;
   const buttonScale = useRef(new Animated.Value(1)).current;
-  const cardAnim    = useRef(new Animated.Value(0)).current;
+  const cardAnim = useRef(new Animated.Value(0)).current;
 
   React.useEffect(() => {
     Animated.timing(cardAnim, {
-      toValue: 1, duration: 400, useNativeDriver: true,
+      toValue: 1,
+      duration: 400,
+      useNativeDriver: true,
     }).start();
   }, []);
 
@@ -82,19 +121,47 @@ const CreateTaskScreen = ({ navigation }) => {
   // ── Shake ──────────────────────────────────────────────
   const triggerShake = () => {
     Animated.sequence([
-      Animated.timing(shakeAnim, { toValue: 10,  duration: 60, useNativeDriver: true }),
-      Animated.timing(shakeAnim, { toValue: -10, duration: 60, useNativeDriver: true }),
-      Animated.timing(shakeAnim, { toValue: 6,   duration: 60, useNativeDriver: true }),
-      Animated.timing(shakeAnim, { toValue: -6,  duration: 60, useNativeDriver: true }),
-      Animated.timing(shakeAnim, { toValue: 0,   duration: 60, useNativeDriver: true }),
+      Animated.timing(shakeAnim, {
+        toValue: 10,
+        duration: 60,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnim, {
+        toValue: -10,
+        duration: 60,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnim, {
+        toValue: 6,
+        duration: 60,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnim, {
+        toValue: -6,
+        duration: 60,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnim, {
+        toValue: 0,
+        duration: 60,
+        useNativeDriver: true,
+      }),
     ]).start();
   };
 
   // ── Animación botón ────────────────────────────────────
   const animatePress = (callback) => {
     Animated.sequence([
-      Animated.timing(buttonScale, { toValue: 0.96, duration: 80, useNativeDriver: true }),
-      Animated.timing(buttonScale, { toValue: 1,    duration: 80, useNativeDriver: true }),
+      Animated.timing(buttonScale, {
+        toValue: 0.96,
+        duration: 80,
+        useNativeDriver: true,
+      }),
+      Animated.timing(buttonScale, {
+        toValue: 1,
+        duration: 80,
+        useNativeDriver: true,
+      }),
     ]).start(callback);
   };
 
@@ -104,15 +171,24 @@ const CreateTaskScreen = ({ navigation }) => {
       if (validate()) {
         setIsLoading(true);
         setTimeout(() => {
-          addTask({
-            id:          Date.now().toString(),
-            title:       title.trim(),
+          const taskPayload = {
+            title: title.trim(),
             description: description.trim(),
-            status:      "pending",
             priority,
             category,
-            createdAt:   formatCreatedAt(),
-          });
+          };
+
+          if (isEditMode && taskToEdit) {
+            updateTask({ id: taskId, ...taskPayload });
+          } else {
+            addTask({
+              id: Date.now().toString(),
+              status: "pending",
+              createdAt: formatCreatedAt(),
+              ...taskPayload,
+            });
+          }
+
           setIsLoading(false);
           navigation.goBack();
         }, 600);
@@ -122,10 +198,13 @@ const CreateTaskScreen = ({ navigation }) => {
     });
   };
 
-  const clearError = (field) =>
-    setErrors((prev) => ({ ...prev, [field]: "" }));
+  const clearError = (field) => setErrors((prev) => ({ ...prev, [field]: "" }));
 
   const selectedPriority = PRIORITY_OPTIONS.find((p) => p.key === priority);
+  const pageTitle = isEditMode ? "Editar tarea" : "Nueva Tarea";
+  const pageSubtitle = isEditMode
+    ? "Actualiza los detalles de la tarea"
+    : "Completa los campos para agregar al dashboard";
 
   // ─────────────────────────────────────────────────────
   return (
@@ -140,21 +219,17 @@ const CreateTaskScreen = ({ navigation }) => {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-
         {/* ── ENCABEZADO con Image ──────────────────────── */}
         <View style={styles.headerSection}>
-          
           <Image
-          source={require("../../assets/images/logo.png")}
-          style={styles.headerLogo}
-          resizeMode="contain"
+            source={require("../../assets/images/logo.png")}
+            style={styles.headerLogo}
+            resizeMode="contain"
           />
 
           <View style={styles.headerTextWrapper}>
-            <Text style={styles.pageTitle}>Nueva Tarea</Text>
-            <Text style={styles.pageSubtitle}>
-              Completa los campos para agregar al dashboard
-            </Text>
+            <Text style={styles.pageTitle}>{pageTitle}</Text>
+            <Text style={styles.pageSubtitle}>{pageSubtitle}</Text>
           </View>
         </View>
 
@@ -164,77 +239,103 @@ const CreateTaskScreen = ({ navigation }) => {
             styles.formCard,
             {
               opacity: cardAnim,
-              transform: [{
-                translateY: cardAnim.interpolate({
-                  inputRange: [0, 1], outputRange: [20, 0],
-                }),
-              },
-              { translateX: shakeAnim }],
+              transform: [
+                {
+                  translateY: cardAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [20, 0],
+                  }),
+                },
+                { translateX: shakeAnim },
+              ],
             },
           ]}
         >
-
           {/* Título */}
           <View style={styles.field}>
             <Text style={styles.label}>Título de la tarea *</Text>
-            <View style={[styles.inputRow, errors.title && styles.inputRowError]}>
+            <View
+              style={[styles.inputRow, errors.title && styles.inputRowError]}
+            >
               <Text style={styles.inputIcon}>📝</Text>
               <TextInput
                 style={styles.input}
                 placeholder="Nombre descriptivo de la tarea"
                 placeholderTextColor={colors.textSecondary}
                 value={title}
-                onChangeText={(t) => { setTitle(t); clearError("title"); }}
+                onChangeText={(t) => {
+                  setTitle(t);
+                  clearError("title");
+                }}
                 returnKeyType="next"
                 maxLength={80}
               />
             </View>
-            {errors.title
-              ? <Text style={styles.errorText}>⚠ {errors.title}</Text>
-              : null}
+            {errors.title ? (
+              <Text style={styles.errorText}>⚠ {errors.title}</Text>
+            ) : null}
             <Text style={styles.charCount}>{title.length}/80</Text>
           </View>
 
           {/* Descripción */}
           <View style={styles.field}>
             <Text style={styles.label}>Descripción *</Text>
-            <View style={[styles.textAreaRow, errors.description && styles.inputRowError]}>
+            <View
+              style={[
+                styles.textAreaRow,
+                errors.description && styles.inputRowError,
+              ]}
+            >
               <TextInput
                 style={styles.textArea}
                 placeholder="Detalla el objetivo, contexto o pasos de la tarea..."
                 placeholderTextColor={colors.textSecondary}
                 value={description}
-                onChangeText={(t) => { setDescription(t); clearError("description"); }}
+                onChangeText={(t) => {
+                  setDescription(t);
+                  clearError("description");
+                }}
                 multiline
                 numberOfLines={4}
                 textAlignVertical="top"
                 maxLength={300}
               />
             </View>
-            {errors.description
-              ? <Text style={styles.errorText}>⚠ {errors.description}</Text>
-              : null}
+            {errors.description ? (
+              <Text style={styles.errorText}>⚠ {errors.description}</Text>
+            ) : null}
             <Text style={styles.charCount}>{description.length}/300</Text>
           </View>
 
           {/* Categoría */}
           <View style={styles.field}>
             <Text style={styles.label}>Categoría *</Text>
-            {errors.category
-              ? <Text style={styles.errorText}>⚠ {errors.category}</Text>
-              : null}
+            {errors.category ? (
+              <Text style={styles.errorText}>⚠ {errors.category}</Text>
+            ) : null}
             <View style={styles.optionsGrid}>
               {CATEGORY_OPTIONS.map((item) => {
                 const isActive = category === item.key;
                 return (
                   <TouchableOpacity
                     key={item.key}
-                    style={[styles.categoryBtn, isActive && styles.categoryBtnActive]}
-                    onPress={() => { setCategory(item.key); clearError("category"); }}
+                    style={[
+                      styles.categoryBtn,
+                      isActive && styles.categoryBtnActive,
+                    ]}
+                    onPress={() => {
+                      setCategory(item.key);
+                      clearError("category");
+                    }}
                     activeOpacity={0.8}
                   >
                     <Text style={styles.categoryBtnIcon}>{item.icon}</Text>
-                    <Text style={[styles.categoryBtnText, isActive && styles.categoryBtnTextActive]}>
+                    <Text
+                      style={[
+                        styles.categoryBtnText,
+                        isActive && styles.categoryBtnTextActive,
+                      ]}
+                    >
                       {item.key}
                     </Text>
                   </TouchableOpacity>
@@ -264,10 +365,12 @@ const CreateTaskScreen = ({ navigation }) => {
                     activeOpacity={0.8}
                   >
                     <Text style={styles.priorityBtnIcon}>{item.icon}</Text>
-                    <Text style={[
-                      styles.priorityBtnText,
-                      isActive && { color: item.color, fontWeight: "800" },
-                    ]}>
+                    <Text
+                      style={[
+                        styles.priorityBtnText,
+                        isActive && { color: item.color, fontWeight: "800" },
+                      ]}
+                    >
                       {item.label}
                     </Text>
                   </TouchableOpacity>
@@ -280,11 +383,23 @@ const CreateTaskScreen = ({ navigation }) => {
           {title.trim().length > 0 && (
             <View style={styles.previewWrapper}>
               <Text style={styles.previewLabel}>Vista previa</Text>
-              <View style={[styles.previewCard, { borderLeftColor: selectedPriority?.color }]}>
-                <Text style={styles.previewTitle} numberOfLines={1}>{title}</Text>
+              <View
+                style={[
+                  styles.previewCard,
+                  { borderLeftColor: selectedPriority?.color },
+                ]}
+              >
+                <Text style={styles.previewTitle} numberOfLines={1}>
+                  {title}
+                </Text>
                 <View style={styles.previewRow}>
                   <Text style={styles.previewChip}>{category}</Text>
-                  <Text style={[styles.previewPriority, { color: selectedPriority?.color }]}>
+                  <Text
+                    style={[
+                      styles.previewPriority,
+                      { color: selectedPriority?.color },
+                    ]}
+                  >
                     {selectedPriority?.icon} {selectedPriority?.label}
                   </Text>
                 </View>
@@ -301,7 +416,11 @@ const CreateTaskScreen = ({ navigation }) => {
               activeOpacity={0.9}
             >
               <Text style={styles.saveBtnText}>
-                {isLoading ? "Guardando..." : "Guardar tarea →"}
+                {isLoading
+                  ? "Guardando..."
+                  : isEditMode
+                    ? "Actualizar tarea →"
+                    : "Guardar tarea →"}
               </Text>
             </TouchableOpacity>
           </Animated.View>
@@ -314,7 +433,6 @@ const CreateTaskScreen = ({ navigation }) => {
           >
             <Text style={styles.cancelText}>Cancelar</Text>
           </TouchableOpacity>
-
         </Animated.View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -323,7 +441,6 @@ const CreateTaskScreen = ({ navigation }) => {
 
 // ── ESTILOS ──────────────────────────────────────────────
 const styles = StyleSheet.create({
-
   root: {
     flex: 1,
     backgroundColor: colors.background,
@@ -342,7 +459,7 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
     gap: 14,
   },
-  
+
   headerLogo: {
     width: 44,
     height: 44,
@@ -605,7 +722,6 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     fontWeight: "500",
   },
-
 });
 
 export default CreateTaskScreen;

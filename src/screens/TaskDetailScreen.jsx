@@ -1,34 +1,49 @@
-import React, { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import {
-  Alert,
-  Animated,
-  Button,
-  Image,
-  Platform,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    Alert,
+    Animated,
+    Button,
+    Image,
+    Platform,
+    ScrollView,
+    StatusBar,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { useTasks } from "../context/TaskContext";
 import { colors } from "../theme/colors";
 
 const PRIORITY_CONFIG = {
-  high:   { label: "Alta",  color: colors.priorityHigh, bg: "#FEE2E2", icon: "🔴" },
-  medium: { label: "Media", color: colors.priorityMed,  bg: "#FEF3C7", icon: "🟡" },
-  low:    { label: "Baja",  color: colors.priorityLow,  bg: colors.secondaryLight, icon: "🟢" },
+  high: {
+    label: "Alta",
+    color: colors.priorityHigh,
+    bg: "#FEE2E2",
+    icon: "🔴",
+  },
+  medium: {
+    label: "Media",
+    color: colors.priorityMed,
+    bg: "#FEF3C7",
+    icon: "🟡",
+  },
+  low: {
+    label: "Baja",
+    color: colors.priorityLow,
+    bg: colors.secondaryLight,
+    icon: "🟢",
+  },
 };
 
 const CATEGORY_ICONS = {
-  Comercial:  "💼",
-  Diseño:     "🎨",
+  Comercial: "💼",
+  Diseño: "🎨",
   Desarrollo: "💻",
-  Gestión:    "📊",
-  Marketing:  "📣",
-  Soporte:    "🛠️",
-  default:    "📋",
+  Gestión: "📊",
+  Marketing: "📣",
+  Soporte: "🛠️",
+  default: "📋",
 };
 
 const TaskDetailScreen = ({ route, navigation }) => {
@@ -37,15 +52,23 @@ const TaskDetailScreen = ({ route, navigation }) => {
   const task = useMemo(() => getTaskById(taskId), [getTaskById, taskId]);
 
   // ── Animaciones ────────────────────────────────────────
-  const fadeAnim   = useRef(new Animated.Value(0)).current;
-  const slideAnim  = useRef(new Animated.Value(30)).current;
-  const btnScale   = useRef(new Animated.Value(1)).current;
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(30)).current;
+  const btnScale = useRef(new Animated.Value(1)).current;
   const statusAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     Animated.parallel([
-      Animated.timing(fadeAnim,  { toValue: 1, duration: 400, useNativeDriver: true }),
-      Animated.timing(slideAnim, { toValue: 0, duration: 400, useNativeDriver: true }),
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 400,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 400,
+        useNativeDriver: true,
+      }),
     ]).start();
   }, []);
 
@@ -59,8 +82,16 @@ const TaskDetailScreen = ({ route, navigation }) => {
 
   const animateBtn = (callback) => {
     Animated.sequence([
-      Animated.timing(btnScale, { toValue: 0.96, duration: 80, useNativeDriver: true }),
-      Animated.timing(btnScale, { toValue: 1,    duration: 80, useNativeDriver: true }),
+      Animated.timing(btnScale, {
+        toValue: 0.96,
+        duration: 80,
+        useNativeDriver: true,
+      }),
+      Animated.timing(btnScale, {
+        toValue: 1,
+        duration: 80,
+        useNativeDriver: true,
+      }),
     ]).start(callback);
   };
 
@@ -68,7 +99,10 @@ const TaskDetailScreen = ({ route, navigation }) => {
   if (!task) {
     return (
       <View style={styles.notFoundRoot}>
-        <StatusBar barStyle="dark-content" backgroundColor={colors.background} />
+        <StatusBar
+          barStyle="dark-content"
+          backgroundColor={colors.background}
+        />
         <Text style={styles.notFoundIcon}>📭</Text>
         <Text style={styles.notFoundTitle}>Tarea no encontrada</Text>
         <Text style={styles.notFoundSubtitle}>
@@ -85,7 +119,7 @@ const TaskDetailScreen = ({ route, navigation }) => {
     );
   }
 
-  const isCompleted  = task.status === "completed";
+  const isCompleted = task.status === "completed";
   const priorityInfo = PRIORITY_CONFIG[task.priority] ?? PRIORITY_CONFIG.medium;
   const categoryIcon = CATEGORY_ICONS[task.category] ?? CATEGORY_ICONS.default;
 
@@ -107,13 +141,13 @@ const TaskDetailScreen = ({ route, navigation }) => {
             navigation.navigate("Home");
           },
         },
-      ]
+      ],
     );
   };
 
   // ── Color del header según estado ─────────────────────
   const headerBg = statusAnim.interpolate({
-    inputRange:  [0, 1],
+    inputRange: [0, 1],
     outputRange: [colors.primary, colors.secondary],
   });
 
@@ -126,7 +160,6 @@ const TaskDetailScreen = ({ route, navigation }) => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scroll}
       >
-
         {/* ── HEADER animado ──────────────────────────── */}
         <Animated.View style={[styles.header, { backgroundColor: headerBg }]}>
           <View style={styles.headerDecor1} />
@@ -134,15 +167,21 @@ const TaskDetailScreen = ({ route, navigation }) => {
 
           {/* Image + logo */}
           <View style={styles.headerTop}>
-
             <Image
-            source={require("../../assets/images/logo.png")}
-            style={styles.headerLogoImg}
-            resizeMode="contain"
+              source={require("../../assets/images/logo.png")}
+              style={styles.headerLogoImg}
+              resizeMode="contain"
             />
 
             {/* Badge de estado */}
-            <View style={[styles.statusBadge, isCompleted ? styles.statusBadgeDone : styles.statusBadgePending]}>
+            <View
+              style={[
+                styles.statusBadge,
+                isCompleted
+                  ? styles.statusBadgeDone
+                  : styles.statusBadgePending,
+              ]}
+            >
               <Text style={styles.statusBadgeText}>
                 {isCompleted ? "✓ Completada" : "⏳ Pendiente"}
               </Text>
@@ -174,7 +213,6 @@ const TaskDetailScreen = ({ route, navigation }) => {
             { opacity: fadeAnim, transform: [{ translateY: slideAnim }] },
           ]}
         >
-
           {/* Descripción */}
           <View style={styles.section}>
             <Text style={styles.sectionLabel}>📄 Descripción</Text>
@@ -183,7 +221,9 @@ const TaskDetailScreen = ({ route, navigation }) => {
 
           {/* Metadatos */}
           <View style={styles.metaRow}>
-            <View style={[styles.metaCard, { borderTopColor: priorityInfo.color }]}>
+            <View
+              style={[styles.metaCard, { borderTopColor: priorityInfo.color }]}
+            >
               <Text style={styles.metaIcon}>{priorityInfo.icon}</Text>
               <Text style={styles.metaLabel}>Prioridad</Text>
               <Text style={[styles.metaValue, { color: priorityInfo.color }]}>
@@ -195,20 +235,36 @@ const TaskDetailScreen = ({ route, navigation }) => {
               <Text style={styles.metaLabel}>Creado</Text>
               <Text style={styles.metaValue}>{task.createdAt}</Text>
             </View>
-            <View style={[styles.metaCard, { borderTopColor: colors.secondary }]}>
+            <View
+              style={[styles.metaCard, { borderTopColor: colors.secondary }]}
+            >
               <Text style={styles.metaIcon}>{categoryIcon}</Text>
               <Text style={styles.metaLabel}>Categoría</Text>
-              <Text style={styles.metaValue} numberOfLines={1}>{task.category}</Text>
+              <Text style={styles.metaValue} numberOfLines={1}>
+                {task.category}
+              </Text>
             </View>
           </View>
 
           {/* Barra de estado visual */}
           <View style={styles.statusBar}>
-            <View style={[styles.statusStep, { backgroundColor: colors.primary }]}>
+            <View
+              style={[styles.statusStep, { backgroundColor: colors.primary }]}
+            >
               <Text style={styles.statusStepText}>Creada</Text>
             </View>
-            <View style={[styles.statusConnector, isCompleted && { backgroundColor: colors.secondary }]} />
-            <View style={[styles.statusStep, isCompleted && { backgroundColor: colors.secondary }]}>
+            <View
+              style={[
+                styles.statusConnector,
+                isCompleted && { backgroundColor: colors.secondary },
+              ]}
+            />
+            <View
+              style={[
+                styles.statusStep,
+                isCompleted && { backgroundColor: colors.secondary },
+              ]}
+            >
               <Text style={styles.statusStepText}>
                 {isCompleted ? "Completada" : "En curso"}
               </Text>
@@ -234,15 +290,26 @@ const TaskDetailScreen = ({ route, navigation }) => {
               </TouchableOpacity>
             </Animated.View>
 
+            <Animated.View style={{ transform: [{ scale: btnScale }] }}>
+              <TouchableOpacity
+                style={[styles.actionBtn, styles.actionBtnEdit]}
+                onPress={() =>
+                  navigation.navigate("CreateTask", { taskId: task.id })
+                }
+                activeOpacity={0.9}
+              >
+                <Text style={styles.actionBtnText}>✏️ Editar tarea</Text>
+              </TouchableOpacity>
+            </Animated.View>
+
             <View style={styles.deleteBtnWrapper}>
               <Button
-              title="🗑  Eliminar tarea "
-              color={colors.danger}
-              onPress={handleDelete}
+                title="🗑  Eliminar tarea"
+                color={colors.danger}
+                onPress={handleDelete}
               />
             </View>
           </View>
-
         </Animated.View>
       </ScrollView>
     </View>
@@ -251,7 +318,6 @@ const TaskDetailScreen = ({ route, navigation }) => {
 
 // ── ESTILOS ──────────────────────────────────────────────
 const styles = StyleSheet.create({
-
   root: {
     flex: 1,
     backgroundColor: colors.background,
@@ -295,13 +361,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 16,
   },
-  
+
   headerLogoImg: {
     width: 36,
     height: 36,
     borderRadius: 10,
   },
-  
+
   statusBadge: {
     paddingHorizontal: 14,
     paddingVertical: 6,
@@ -478,6 +544,11 @@ const styles = StyleSheet.create({
     shadowColor: colors.secondary,
   },
 
+  actionBtnEdit: {
+    backgroundColor: colors.primary,
+    shadowColor: colors.primary,
+  },
+
   actionBtnUndo: {
     backgroundColor: colors.warning,
     shadowColor: colors.warning,
@@ -489,7 +560,7 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     letterSpacing: 0.3,
   },
-  
+
   deleteBtnWrapper: {
     borderRadius: 14,
     overflow: "hidden",
@@ -547,7 +618,6 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     fontSize: 15,
   },
-
 });
 
 export default TaskDetailScreen;
