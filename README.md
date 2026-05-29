@@ -391,7 +391,7 @@ HomeScreen (avatar) ──▶ Menú desplegable ──▶ Cerrar sesión ──�
 |---|---|---|
 | **Avance 1** | Estructura, interfaz, navegación, formularios con validaciones | ✅ Completado |
 | **Avance 2** | Hooks, consumo de APIs, persistencia con AsyncStorage, autenticación local | ✅ Completado |
-| **Avance 3** | Firebase Auth, Firestore, gestión multiusuario en la nube, publicación en Play Store | 🔜 Pendiente |
+| **Avance 3** | Aún no especificado | 🔜 Pendiente |
 
 ---
 
