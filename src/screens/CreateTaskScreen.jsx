@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import { useTasks } from "../context/TaskContext";
 import { colors } from "../theme/colors";
+import { normalizeString } from "../utils/normalize";
 
 const CATEGORY_OPTIONS = [
   { key: "Comercial",   icon: "💼" },
@@ -38,8 +39,14 @@ const formatCreatedAt = () => {
     .replace(/\s+/g, " ");
 };
 
-const CreateTaskScreen = ({ navigation }) => {
-  const { addTask } = useTasks();
+const CreateTaskScreen = ({ route, navigation }) => {
+  const { addTask, updateTask, getTaskById } = useTasks();
+  const taskId = route?.params?.taskId ?? null;
+  const isEditMode = Boolean(taskId);
+  const taskToEdit = React.useMemo(
+    () => (taskId ? getTaskById(taskId) : null),
+    [taskId, getTaskById],
+  );
 
   const [title,       setTitle]       = useState("");
   const [description, setDescription] = useState("");
@@ -47,6 +54,15 @@ const CreateTaskScreen = ({ navigation }) => {
   const [priority,    setPriority]    = useState("medium");
   const [errors,      setErrors]      = useState({});
   const [isLoading,   setIsLoading]   = useState(false);
+
+  React.useEffect(() => {
+    if (taskToEdit) {
+      setTitle(taskToEdit.title);
+      setDescription(taskToEdit.description);
+      setCategory(taskToEdit.category);
+      setPriority(taskToEdit.priority);
+    }
+  }, [taskToEdit]);
 
   // ── Animaciones ────────────────────────────────────────
   const shakeAnim   = useRef(new Animated.Value(0)).current;
@@ -104,7 +120,18 @@ const CreateTaskScreen = ({ navigation }) => {
       if (validate()) {
         setIsLoading(true);
         setTimeout(() => {
-          addTask({
+          const taskPayload = {
+            title: normalizeString(title),
+            description: normalizeString(description),
+            priority,
+            category,
+          };
+
+          if (isEditMode && taskToEdit) {
+            updateTask({ id: taskId, ...taskPayload });
+
+          } else {
+            addTask({
             id:          Date.now().toString(),
             title:       title.trim(),
             description: description.trim(),
@@ -112,7 +139,9 @@ const CreateTaskScreen = ({ navigation }) => {
             priority,
             category,
             createdAt:   formatCreatedAt(),
+            ...taskPayload, 
           });
+        }
           setIsLoading(false);
           navigation.goBack();
         }, 600);
@@ -126,6 +155,10 @@ const CreateTaskScreen = ({ navigation }) => {
     setErrors((prev) => ({ ...prev, [field]: "" }));
 
   const selectedPriority = PRIORITY_OPTIONS.find((p) => p.key === priority);
+  const pageTitle = isEditMode ? "Editar tarea" : "Nueva Tarea";
+  const pageSubtitle = isEditMode
+    ? "Actualiza los detalles de la tarea"
+    : "Completa los campos para agregar al dashboard";
 
   // ─────────────────────────────────────────────────────
   return (
@@ -151,10 +184,8 @@ const CreateTaskScreen = ({ navigation }) => {
           />
 
           <View style={styles.headerTextWrapper}>
-            <Text style={styles.pageTitle}>Nueva Tarea</Text>
-            <Text style={styles.pageSubtitle}>
-              Completa los campos para agregar al dashboard
-            </Text>
+            <Text style={styles.pageTitle}>{pageTitle}</Text>
+            <Text style={styles.pageSubtitle}>{pageSubtitle}</Text>
           </View>
         </View>
 
@@ -301,7 +332,11 @@ const CreateTaskScreen = ({ navigation }) => {
               activeOpacity={0.9}
             >
               <Text style={styles.saveBtnText}>
-                {isLoading ? "Guardando..." : "Guardar tarea →"}
+                {isLoading 
+                ? "Guardando..." 
+                : isEditMode
+                  ? "Actualizar tarea →"
+                  : "Guardar tarea →"}
               </Text>
             </TouchableOpacity>
           </Animated.View>

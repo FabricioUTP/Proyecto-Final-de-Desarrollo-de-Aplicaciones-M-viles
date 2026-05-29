@@ -11,6 +11,12 @@ import {
   useRef,
   useState,
 } from "react";
+import { formatError } from "../utils/error";
+import {
+  normalizeString,
+  normalizeTask,
+  normalizeTaskList,
+} from "../utils/normalize";
 import { useAuth } from "./AuthContext";
 
 const TaskContext = createContext(null);
@@ -74,7 +80,7 @@ const TaskProvider = ({ children }) => {
   const { currentUser } = useAuth();
 
   // Clave única por usuario — cada cuenta tiene su propio storage
-  const userId     = currentUser?.id ?? "guest";
+  const userId     = normalizeString(currentUser?.id ?? "guest");
   const storageKey = `@kronotask_tasks_${userId}`;
 
   const [tasks,          setTasks]          = useState([]);
@@ -99,21 +105,23 @@ const TaskProvider = ({ children }) => {
         if (cancelled) return;
 
         if (stored !== null) {
-          // Cuenta existente — cargar sus tareas guardadas
-          setTasks(JSON.parse(stored));
+          const parsed = JSON.parse(stored);
+          const normalizedTasks = normalizeTaskList(parsed);
+          setTasks(normalizedTasks);
+
         } else {
-          // Cuenta nueva — inicializar con tareas de muestra
           const defaultTasks = currentUser?.isAdmin ? INITIAL_TASKS : [];
+          const normalizedTasks = normalizeTaskList(defaultTasks);
           await AsyncStorage.setItem(
             storageKey,
             JSON.stringify(defaultTasks)
           );
-          setTasks(defaultTasks);
+          setTasks(normalizedTasks);
         }
-      } catch {
+      } catch (err) {
         if (!cancelled) {
-          setStorageError("No se pudieron cargar las tareas guardadas.");
-          setTasks(INITIAL_TASKS);
+          setStorageError(formatError(err).message);
+          setTasks(normalizeTaskList(INITIAL_TASKS));
         }
       } finally { 
         if (!cancelled) {
@@ -136,9 +144,10 @@ const TaskProvider = ({ children }) => {
 
     const saveTasks = async () => {
       try {
-        await AsyncStorage.setItem(storageKey, JSON.stringify(tasks));
-      } catch {
-        setStorageError("No se pudieron guardar los cambios.");
+        const normalizedTasks = normalizeTaskList(tasks);
+        await AsyncStorage.setItem(storageKey, JSON.stringify(normalizedTasks));
+      } catch (err) {
+        setStorageError(formatError(err).message);
       }
     };
 
@@ -148,13 +157,13 @@ const TaskProvider = ({ children }) => {
   // ── CRUD de tareas ────────────────────────────────────────
   
   const addTask = useCallback((task) => {
-    setTasks((prev) => [task, ...prev]);
+    setTasks((prev) => [normalizeTask(task), ...prev]);
   }, []);
   
   const updateTask = useCallback((updatedTask) => {
     setTasks((prev) =>
       prev.map((t) =>
-        t.id === updatedTask.id ? { ...t, ...updatedTask } : t
+        t.id === updatedTask.id ? normalizeTask({ ...t, ...updatedTask }) : t
       )
     );
   }, []);

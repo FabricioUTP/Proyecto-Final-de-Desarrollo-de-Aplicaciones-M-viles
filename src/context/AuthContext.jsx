@@ -10,6 +10,15 @@ import {
   useEffect,
   useState,
 } from "react";
+import { formatError } from "../utils/error";
+
+import {
+  isValidEmail,
+  normalizeAuthPayload,
+  normalizeString,
+  normalizeUser,
+} from "../utils/normalize";
+
 
 const AuthContext = createContext(null);
 
@@ -35,18 +44,36 @@ const AuthProvider = ({ children }) => {
         const stored = await AsyncStorage.getItem(SESSION_KEY);
         if (stored) setCurrentUser(JSON.parse(stored));
       } catch {}
-      finally { setAuthLoading(false); }
+      finally { 
+        setAuthLoading(false); 
+      }
     };
     restoreSession();
   }, []);
 
   const login = useCallback(async (email, password) => {
     try {
+
+      const normalizedEmail = normalizeString(email).toLowerCase();
+      const normalizedPassword = normalizeString(password);
+      if (!normalizedEmail || !normalizedPassword) {
+        return {
+          success: false,
+          error: "El correo y la contraseña son obligatorios.",
+        };
+      }
+      if (!isValidEmail(normalizedEmail)) {
+        return {
+          success: false,
+          error: "Ingresa un correo válido.",
+        };
+      }
+
       if (
-        email.trim().toLowerCase() === ADMIN_USER.email &&
-        password === ADMIN_USER.password
+        normalizedEmail === ADMIN_USER.email &&
+        normalizedPassword === ADMIN_USER.password
       ) {
-        const session = { ...ADMIN_USER };
+        const session = { ...normalizeUser(ADMIN_USER) };
         delete session.password;
         await AsyncStorage.setItem(SESSION_KEY, JSON.stringify(session));
         setCurrentUser(session);
@@ -55,14 +82,16 @@ const AuthProvider = ({ children }) => {
 
       const stored = await AsyncStorage.getItem(USERS_KEY);
       const users  = stored ? JSON.parse(stored) : [];
-      const found  = users.find(
-        (u) =>
-          u.email.toLowerCase() === email.trim().toLowerCase() &&
-          u.password === password
-      );
+      const found  = Array.isArray(users)
+        ? users.find(
+          (u) =>
+            u.email.toLowerCase() === email.normalizedEmail &&
+          u.password === normalizedPassword,
+          )
+        : null;
 
       if (found) {
-        const session = { ...found };
+        const session = { ...normalizeUser(found) };
         delete session.password;
         await AsyncStorage.setItem(SESSION_KEY, JSON.stringify(session));
         setCurrentUser(session);
@@ -73,34 +102,61 @@ const AuthProvider = ({ children }) => {
         success: false,
         error: "Datos ingresados incorrectamente. Verifica tu correo y contraseña.",
       };
-    } catch {
-      return { success: false, error: "Ocurrió un error al iniciar sesión. Intenta de nuevo." };
+    } catch (err) {
+      return { success: false, error: formatError(err).message };
     }
   }, []);
 
-  const register = useCallback(async ({ fullName, jobTitle, email, password }) => {
+  const register = useCallback(async (payload) => {
     try {
+      const userData = normalizeAuthPayload(payload);
+      const { fullName, jobTitle, email, password } = userData;
+      if (!fullName || !jobTitle || !email || !password) {
+        return {
+          success: false,
+          error: "Todos los campos son obligatorios.",
+        };
+      }
+      if (!isValidEmail(email)) {
+        return {
+          success: false,
+          error: "Ingresa un correo válido.",
+        };
+      }
+      if (password.length < 6) {
+        return {
+          success: false,
+          error: "La contraseña debe tener al menos 6 caracteres.",
+        };
+      }
+
       const stored = await AsyncStorage.getItem(USERS_KEY);
       const users  = stored ? JSON.parse(stored) : [];
 
       const emailExists =
-        users.some((u) => u.email.toLowerCase() === email.trim().toLowerCase()) ||
-        email.trim().toLowerCase() === ADMIN_USER.email;
+        Array.isArray(users) &&
+        users.some((u) => u.email.toLowerCase() === email.toLowerCase()) || email.trim().toLowerCase() === ADMIN_USER.email;
 
       if (emailExists) {
-        return { success: false, error: "Este correo ya está registrado en el sistema." };
+        return { 
+          success: false, 
+          error: "Este correo ya está registrado en el sistema." };
       }
 
-      const newUser = {
+      const newUser = normalizeUser({
         id:       Date.now().toString(),
-        fullName: fullName.trim(),
-        jobTitle: jobTitle.trim(),
-        email:    email.trim().toLowerCase(),
+        fullName, 
+        jobTitle,
+        email, 
         password,
         isAdmin:  false,
-      };
+      });
 
-      await AsyncStorage.setItem(USERS_KEY, JSON.stringify([...users, newUser]));
+      const usersToStore = Array.isArray(users)
+        ? [...users, newUser]
+        : [newUser];
+
+      await AsyncStorage.setItem(USERS_KEY, JSON.stringify(usersToStore));
 
       const session = { ...newUser };
       delete session.password;
@@ -108,14 +164,18 @@ const AuthProvider = ({ children }) => {
       setCurrentUser(session);
 
       return { success: true, error: null };
-    } catch {
-      return { success: false, error: "No se pudo crear la cuenta. Intenta de nuevo." };
+    } catch (err) {
+      return { success: false, error: formatError(err).message };
     }
   }, []);
 
   const logout = useCallback(async () => {
-    try { await AsyncStorage.removeItem(SESSION_KEY); } catch {}
-    finally { setCurrentUser(null); }
+    try { 
+      await AsyncStorage.removeItem(SESSION_KEY); 
+    } catch {
+    }finally { 
+      setCurrentUser(null); 
+    }
   }, []);
 
   return (

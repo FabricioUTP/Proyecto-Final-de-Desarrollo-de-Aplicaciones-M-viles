@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import {
   Alert,
   Animated,
@@ -68,7 +68,10 @@ const TaskDetailScreen = ({ route, navigation }) => {
   if (!task) {
     return (
       <View style={styles.notFoundRoot}>
-        <StatusBar barStyle="dark-content" backgroundColor={colors.background} />
+        <StatusBar 
+          barStyle="dark-content" 
+          backgroundColor={colors.background} 
+        />
         <Text style={styles.notFoundIcon}>📭</Text>
         <Text style={styles.notFoundTitle}>Tarea no encontrada</Text>
         <Text style={styles.notFoundSubtitle}>
@@ -76,7 +79,7 @@ const TaskDetailScreen = ({ route, navigation }) => {
         </Text>
         <TouchableOpacity
           style={styles.returnBtn}
-          onPress={() => navigation.navigate("Home")}
+          onPress={() => navigation.goBack()}
           activeOpacity={0.85}
         >
           <Text style={styles.returnBtnText}>Volver al inicio</Text>
@@ -104,7 +107,7 @@ const TaskDetailScreen = ({ route, navigation }) => {
           style: "destructive",
           onPress: () => {
             removeTask(task.id);
-            navigation.navigate("Home");
+            navigation.goBack();
           },
         },
       ]
@@ -142,7 +145,13 @@ const TaskDetailScreen = ({ route, navigation }) => {
             />
 
             {/* Badge de estado */}
-            <View style={[styles.statusBadge, isCompleted ? styles.statusBadgeDone : styles.statusBadgePending]}>
+            <View style={[
+              styles.statusBadge, 
+              isCompleted 
+                ? styles.statusBadgeDone 
+                : styles.statusBadgePending
+                ]}
+            >
               <Text style={styles.statusBadgeText}>
                 {isCompleted ? "✓ Completada" : "⏳ Pendiente"}
               </Text>
@@ -231,6 +240,18 @@ const TaskDetailScreen = ({ route, navigation }) => {
                     ? "↩  Marcar como pendiente"
                     : "✓  Marcar como completada"}
                 </Text>
+              </TouchableOpacity>
+            </Animated.View>
+
+            <Animated.View style={{ transform: [{ scale: btnScale }] }}>
+              <TouchableOpacity
+                style={[styles.actionBtn, styles.actionBtnEdit]}
+                onPress={() =>
+                  navigation.navigate("CreateTask", { taskId: task.id })
+                }
+                activeOpacity={0.9}
+              >
+                <Text style={styles.actionBtnText}>✏️ Editar tarea</Text>
               </TouchableOpacity>
             </Animated.View>
 
@@ -476,6 +497,11 @@ const styles = StyleSheet.create({
   actionBtnDone: {
     backgroundColor: colors.secondary,
     shadowColor: colors.secondary,
+  },
+
+  actionBtnEdit: {
+    backgroundColor: colors.primary,
+    shadowColor: colors.primary,
   },
 
   actionBtnUndo: {
