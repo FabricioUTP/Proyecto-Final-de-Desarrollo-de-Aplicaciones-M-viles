@@ -17,9 +17,9 @@ import { formatError } from "../utils/error";
  * Retorna: { data, loading, error, refetch }
  */
 const useApi = (apiFn, deps = [], immediate = true) => {
-  const [data,    setData]    = useState(null);
+  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(immediate);
-  const [error,   setError]   = useState(null);
+  const [error, setError] = useState(null);
 
   // Evita actualizar el estado si el componente ya fue desmontado
   const isMounted = useRef(true);
@@ -54,7 +54,7 @@ const useApi = (apiFn, deps = [], immediate = true) => {
         setLoading(false);
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
 
   // ── Ejecutar automáticamente al montar ──────────────────
@@ -62,7 +62,7 @@ const useApi = (apiFn, deps = [], immediate = true) => {
     if (immediate) {
       execute();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [execute]);
 
   // refetch permite volver a ejecutar la petición manualmente

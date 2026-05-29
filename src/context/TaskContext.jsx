@@ -4,16 +4,20 @@
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
+    createContext,
+    useCallback,
+    useContext,
+    useEffect,
+    useRef,
+    useState,
 } from "react";
-import { useAuth } from "./AuthContext";
 import { formatError } from "../utils/error";
-import { normalizeString, normalizeTask, normalizeTaskList } from "../utils/normalize";
+import {
+    normalizeString,
+    normalizeTask,
+    normalizeTaskList,
+} from "../utils/normalize";
+import { useAuth } from "./AuthContext";
 
 const TaskContext = createContext(null);
 
@@ -79,9 +83,9 @@ const TaskProvider = ({ children }) => {
   const userId = normalizeString(currentUser?.id, "guest");
   const storageKey = `@kronotask_tasks_${userId}`;
 
-  const [tasks,          setTasks]          = useState([]);
+  const [tasks, setTasks] = useState([]);
   const [storageLoading, setStorageLoading] = useState(true);
-  const [storageError,   setStorageError]   = useState(null);
+  const [storageError, setStorageError] = useState(null);
 
   // Ref para evitar guardar durante el cambio de usuario
   const isLoadingRef = useRef(true);
@@ -107,7 +111,10 @@ const TaskProvider = ({ children }) => {
         } else {
           const defaultTasks = currentUser?.isAdmin ? INITIAL_TASKS : [];
           const normalizedTasks = normalizeTaskList(defaultTasks);
-          await AsyncStorage.setItem(storageKey, JSON.stringify(normalizedTasks));
+          await AsyncStorage.setItem(
+            storageKey,
+            JSON.stringify(normalizedTasks),
+          );
           setTasks(normalizedTasks);
         }
       } catch (err) {
@@ -115,7 +122,7 @@ const TaskProvider = ({ children }) => {
           setStorageError(formatError(err).message);
           setTasks(normalizeTaskList(INITIAL_TASKS));
         }
-      } finally { 
+      } finally {
         if (!cancelled) {
           isLoadingRef.current = false;
           setStorageLoading(false);
@@ -126,7 +133,9 @@ const TaskProvider = ({ children }) => {
     loadTasks();
 
     // Cleanup: ignorar resultados si el userId cambió antes de terminar
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [storageKey, userId]);
 
   // ── useEffect: guardar tareas al cambiar ──────────────────
@@ -147,38 +156,38 @@ const TaskProvider = ({ children }) => {
   }, [tasks, storageLoading, storageKey]);
 
   // ── CRUD de tareas ────────────────────────────────────────
-  
+
   const addTask = useCallback((task) => {
     setTasks((prev) => [normalizeTask(task), ...prev]);
   }, []);
-  
+
   const updateTask = useCallback((updatedTask) => {
     setTasks((prev) =>
       prev.map((t) =>
-        t.id === updatedTask.id ? normalizeTask({ ...t, ...updatedTask }) : t
-      )
+        t.id === updatedTask.id ? normalizeTask({ ...t, ...updatedTask }) : t,
+      ),
     );
   }, []);
-  
+
   const removeTask = useCallback((taskId) => {
     setTasks((prev) => prev.filter((t) => t.id !== taskId));
   }, []);
-  
+
   const toggleTaskStatus = useCallback((taskId) => {
     setTasks((prev) =>
       prev.map((t) =>
         t.id === taskId
           ? { ...t, status: t.status === "completed" ? "pending" : "completed" }
-          : t
-      )
+          : t,
+      ),
     );
   }, []);
-  
+
   const getTaskById = useCallback(
     (taskId) => tasks.find((t) => t.id === taskId),
-    [tasks]
+    [tasks],
   );
-  
+
   const clearStorageError = useCallback(() => setStorageError(null), []);
 
   return (

@@ -1,4 +1,7 @@
-const normalizeErrorMessage = (error, fallback = "Ocurrió un error inesperado. Intenta de nuevo.") => {
+const normalizeErrorMessage = (
+  error,
+  fallback = "Ocurrió un error inesperado. Intenta de nuevo.",
+) => {
   if (!error) return fallback;
   if (typeof error === "string") return error;
   if (error instanceof Error) return error.message || fallback;
@@ -19,7 +22,10 @@ export const createError = (message, code = "UNKNOWN_ERROR") => {
   return error;
 };
 
-export const formatError = (error, fallback = "Ocurrió un error inesperado. Intenta de nuevo.") => {
+export const formatError = (
+  error,
+  fallback = "Ocurrió un error inesperado. Intenta de nuevo.",
+) => {
   const message = normalizeErrorMessage(error, fallback);
   return {
     message,

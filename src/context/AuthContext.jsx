@@ -4,27 +4,32 @@
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
+    createContext,
+    useCallback,
+    useContext,
+    useEffect,
+    useState,
 } from "react";
 import { formatError } from "../utils/error";
-import { isValidEmail, normalizeAuthPayload, normalizeString, normalizeUser } from "../utils/normalize";
+import {
+    isValidEmail,
+    normalizeAuthPayload,
+    normalizeString,
+    normalizeUser,
+} from "../utils/normalize";
 
 const AuthContext = createContext(null);
 
-const USERS_KEY   = "@kronotask_registered_users";
+const USERS_KEY = "@kronotask_registered_users";
 const SESSION_KEY = "@kronotask_current_session";
 
 const ADMIN_USER = {
-  id:       "admin",
+  id: "admin",
   fullName: "Admin",
   jobTitle: "Administrador",
-  email:    "admin@kronotask.com",
+  email: "admin@kronotask.com",
   password: "Admin123",
-  isAdmin:  true,
+  isAdmin: true,
 };
 
 const AuthProvider = ({ children }) => {
@@ -36,8 +41,10 @@ const AuthProvider = ({ children }) => {
       try {
         const stored = await AsyncStorage.getItem(SESSION_KEY);
         if (stored) setCurrentUser(JSON.parse(stored));
-      } catch {}
-      finally { setAuthLoading(false); }
+      } catch {
+      } finally {
+        setAuthLoading(false);
+      }
     };
     restoreSession();
   }, []);
@@ -78,7 +85,7 @@ const AuthProvider = ({ children }) => {
         ? users.find(
             (u) =>
               u.email.toLowerCase() === normalizedEmail &&
-              u.password === normalizedPassword
+              u.password === normalizedPassword,
           )
         : null;
 
@@ -92,7 +99,8 @@ const AuthProvider = ({ children }) => {
 
       return {
         success: false,
-        error: "Datos ingresados incorrectamente. Verifica tu correo y contraseña.",
+        error:
+          "Datos ingresados incorrectamente. Verifica tu correo y contraseña.",
       };
     } catch (err) {
       return { success: false, error: formatError(err).message };
@@ -147,7 +155,9 @@ const AuthProvider = ({ children }) => {
         password,
         isAdmin: false,
       });
-      const usersToStore = Array.isArray(users) ? [...users, newUser] : [newUser];
+      const usersToStore = Array.isArray(users)
+        ? [...users, newUser]
+        : [newUser];
 
       await AsyncStorage.setItem(USERS_KEY, JSON.stringify(usersToStore));
 
@@ -163,12 +173,18 @@ const AuthProvider = ({ children }) => {
   }, []);
 
   const logout = useCallback(async () => {
-    try { await AsyncStorage.removeItem(SESSION_KEY); } catch {}
-    finally { setCurrentUser(null); }
+    try {
+      await AsyncStorage.removeItem(SESSION_KEY);
+    } catch {
+    } finally {
+      setCurrentUser(null);
+    }
   }, []);
 
   return (
-    <AuthContext.Provider value={{ currentUser, authLoading, login, register, logout }}>
+    <AuthContext.Provider
+      value={{ currentUser, authLoading, login, register, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -181,3 +197,4 @@ const useAuth = () => {
 };
 
 export { AuthProvider, useAuth };
+

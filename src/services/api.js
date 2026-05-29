@@ -4,7 +4,11 @@
 // Simula un directorio corporativo con usuarios y sus tareas asignadas
 
 import { createError } from "../utils/error";
-import { normalizeTask, normalizeTaskList, normalizeUser, normalizeUserList } from "../utils/normalize";
+import {
+    normalizeTaskList,
+    normalizeUser,
+    normalizeUserList
+} from "../utils/normalize";
 
 const BASE_URL = "https://jsonplaceholder.typicode.com";
 
@@ -17,9 +21,12 @@ const fetchWithTimeout = (url, options = {}) => {
     fetch(url, options),
     new Promise((_, reject) =>
       setTimeout(
-        () => reject(new Error("La solicitud tardó demasiado. Verifica tu conexión.")),
-        TIMEOUT_MS
-      )
+        () =>
+          reject(
+            new Error("La solicitud tardó demasiado. Verifica tu conexión."),
+          ),
+        TIMEOUT_MS,
+      ),
     ),
   ]);
 };
@@ -29,7 +36,7 @@ const handleResponse = async (response) => {
   if (!response.ok) {
     throw createError(
       `Error ${response.status}: No se pudo obtener la información.`,
-      `HTTP_${response.status}`
+      `HTTP_${response.status}`,
     );
   }
 
@@ -38,7 +45,7 @@ const handleResponse = async (response) => {
   } catch {
     throw createError(
       "La respuesta del servidor no tiene un formato válido.",
-      "INVALID_JSON"
+      "INVALID_JSON",
     );
   }
 };
@@ -56,7 +63,10 @@ export const fetchTeamMembers = async () => {
   const data = await handleResponse(response);
 
   if (!Array.isArray(data)) {
-    throw createError("No se recibió un listado válido de miembros.", "INVALID_PAYLOAD");
+    throw createError(
+      "No se recibió un listado válido de miembros.",
+      "INVALID_PAYLOAD",
+    );
   }
 
   return normalizeUserList(
@@ -71,7 +81,7 @@ export const fetchTeamMembers = async () => {
       city: user.address?.city,
       website: user.website,
       initials: user.name,
-    }))
+    })),
   );
 };
 
@@ -81,12 +91,15 @@ export const fetchTeamMembers = async () => {
  */
 export const fetchMemberTasks = async (userId) => {
   const response = await fetchWithTimeout(
-    `${BASE_URL}/todos?userId=${userId}&_limit=5`
+    `${BASE_URL}/todos?userId=${userId}&_limit=5`,
   );
   const data = await handleResponse(response);
 
   if (!Array.isArray(data)) {
-    throw createError("No se recibieron tareas válidas para el miembro.", "INVALID_PAYLOAD");
+    throw createError(
+      "No se recibieron tareas válidas para el miembro.",
+      "INVALID_PAYLOAD",
+    );
   }
 
   return normalizeTaskList(
@@ -98,7 +111,7 @@ export const fetchMemberTasks = async (userId) => {
       category: "General",
       priority: "medium",
       createdAt: "",
-    }))
+    })),
   );
 };
 
@@ -111,7 +124,10 @@ export const fetchMemberById = async (userId) => {
   const data = await handleResponse(response);
 
   if (!data || typeof data !== "object") {
-    throw createError("No se recibió información válida del miembro.", "INVALID_PAYLOAD");
+    throw createError(
+      "No se recibió información válida del miembro.",
+      "INVALID_PAYLOAD",
+    );
   }
 
   return normalizeUser({

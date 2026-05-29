@@ -25,7 +25,11 @@ export const normalizeCreatedAt = (value) => {
   const formatted = normalizeString(value);
   if (formatted) return formatted;
   return new Date()
-    .toLocaleDateString("es-PE", { day: "2-digit", month: "short", year: "numeric" })
+    .toLocaleDateString("es-PE", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    })
     .replace(/\./g, "")
     .replace(/\s+/g, " ");
 };
@@ -48,11 +52,12 @@ export const normalizeTaskList = (tasks) =>
 
 export const normalizeUser = (user = {}) => {
   const fullName = normalizeString(user.fullName || user.name, "Usuario");
-  const initials = normalizeString(user.initials || fullName)
-    .split(" ")
-    .map((fragment) => fragment[0]?.toUpperCase() ?? "")
-    .slice(0, 2)
-    .join("") || "US";
+  const initials =
+    normalizeString(user.initials || fullName)
+      .split(" ")
+      .map((fragment) => fragment[0]?.toUpperCase() ?? "")
+      .slice(0, 2)
+      .join("") || "US";
 
   return {
     id: normalizeString(user.id, Date.now().toString()),
@@ -74,7 +79,12 @@ export const normalizeUser = (user = {}) => {
 export const normalizeUserList = (users) =>
   Array.isArray(users) ? users.map(normalizeUser) : [];
 
-export const normalizeAuthPayload = ({ fullName, jobTitle, email, password }) => ({
+export const normalizeAuthPayload = ({
+  fullName,
+  jobTitle,
+  email,
+  password,
+}) => ({
   fullName: normalizeString(fullName),
   jobTitle: normalizeString(jobTitle),
   email: normalizeEmail(email),

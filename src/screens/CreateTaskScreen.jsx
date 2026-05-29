@@ -13,8 +13,8 @@ import {
     View,
 } from "react-native";
 import { useTasks } from "../context/TaskContext";
-import { normalizeString } from "../utils/normalize";
 import { colors } from "../theme/colors";
+import { normalizeString } from "../utils/normalize";
 
 const CATEGORY_OPTIONS = [
   { key: "Comercial", icon: "💼" },
