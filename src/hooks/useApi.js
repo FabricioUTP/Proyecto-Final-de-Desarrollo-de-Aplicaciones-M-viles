@@ -6,6 +6,7 @@
 //   - data     → cuando la respuesta es exitosa
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { formatError } from "../utils/error";
 
 /**
  * useApi
@@ -41,12 +42,12 @@ const useApi = (apiFn, deps = [], immediate = true) => {
       const result = await apiFn(...args);
       if (isMounted.current) {
         setData(result);
+        setError(null);
       }
     } catch (err) {
       if (isMounted.current) {
-        setError(
-          err?.message ?? "Ocurrió un error inesperado. Intenta de nuevo."
-        );
+        setData(null);
+        setError(formatError(err).message);
       }
     } finally {
       if (isMounted.current) {

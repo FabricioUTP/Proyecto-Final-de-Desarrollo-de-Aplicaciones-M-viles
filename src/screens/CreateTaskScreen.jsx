@@ -13,6 +13,7 @@ import {
     View,
 } from "react-native";
 import { useTasks } from "../context/TaskContext";
+import { normalizeString } from "../utils/normalize";
 import { colors } from "../theme/colors";
 
 const CATEGORY_OPTIONS = [
@@ -172,8 +173,8 @@ const CreateTaskScreen = ({ route, navigation }) => {
         setIsLoading(true);
         setTimeout(() => {
           const taskPayload = {
-            title: title.trim(),
-            description: description.trim(),
+            title: normalizeString(title),
+            description: normalizeString(description),
             priority,
             category,
           };
