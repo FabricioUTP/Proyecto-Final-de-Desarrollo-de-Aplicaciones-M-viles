@@ -88,7 +88,7 @@ La paleta fue seleccionada para transmitir profesionalismo, claridad visual y bu
 
 ---
 
-## 📁 Estructura del Proyecto (Primer Avance)
+## 📁 Estructura del Proyecto (Segundo Avance)
 
 ```
 KronoTask/
