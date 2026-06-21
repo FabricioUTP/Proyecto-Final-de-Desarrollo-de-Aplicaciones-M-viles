@@ -73,6 +73,7 @@ export const normalizeUser = (user = {}) => {
     website: normalizeString(user.website, ""),
     initials,
     isAdmin: typeof user.isAdmin === "boolean" ? user.isAdmin : false,
+    password: normalizeString(user.password)
   };
 };
 

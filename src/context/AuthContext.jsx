@@ -85,7 +85,7 @@ const AuthProvider = ({ children }) => {
       const found  = Array.isArray(users)
         ? users.find(
           (u) =>
-            u.email.toLowerCase() === email.normalizedEmail &&
+            u.email.toLowerCase() === normalizedEmail &&
           u.password === normalizedPassword,
           )
         : null;
