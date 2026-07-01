@@ -203,7 +203,7 @@ npx expo install react-native-screens react-native-safe-area-context
 
 ---
 
-### Paso 5 — Instalar dependencias complementarias
+### Paso 5 — Instalar dependencias complementarias del Avance 2
 
 ```bash
 # Íconos vectoriales
@@ -350,7 +350,7 @@ Panel principal con tareas persistidas por usuario y acceso al directorio del eq
 
 ---
 
-### 4. ✏️ Pantalla de crear / editar tarea ★ Actualizada en Avance 3
+### 4. ✏️ Pantalla de crear / editar tarea (Actualizada en Avance 3)
 **Archivo:** `src/screens/CreateTaskScreen.jsx`
 
 Formulario interactivo para registrar nuevas tareas. En el Avance 3 se incorporaron tres secciones de funcionalidades nativas del dispositivo.
@@ -372,7 +372,7 @@ Formulario interactivo para registrar nuevas tareas. En el Avance 3 se incorpora
 
 ---
 
-### 5. 🔍 Pantalla de detalle de tarea ★ Actualizada en Avance 3
+### 5. 🔍 Pantalla de detalle de tarea (Actualizada en Avance 3)
 **Archivo:** `src/screens/TaskDetailScreen.jsx`
 
 Vista detallada de una tarea. En el Avance 3 se agregaron secciones para mostrar la evidencia fotográfica, la ubicación y el recordatorio programado.
@@ -435,7 +435,7 @@ El Avance 3 incorpora integración directa con el hardware del dispositivo a tra
 
 ---
 
-### 📷 Cámara y Galería (`expo-image-picker`)
+### 1. 📷 Cámara y Galería (`expo-image-picker`)
 
 Permite adjuntar una **foto de evidencia** a cualquier tarea, siguiendo el flujo habitual de un entorno empresarial donde los colaboradores documentan el resultado de su trabajo con imágenes.
 
@@ -450,7 +450,7 @@ Permite adjuntar una **foto de evidencia** a cualquier tarea, siguiendo el flujo
 
 ---
 
-### 📍 GPS y Geocodificación Inversa (`expo-location`)
+### 2. 📍 GPS y Geocodificación Inversa (`expo-location`)
 
 Registra la **ubicación geográfica** desde donde se crea la tarea. Útil para equipos de campo (técnicos, vendedores, inspectores) que trabajan en distintas sedes o ubicaciones.
 
@@ -464,7 +464,7 @@ Registra la **ubicación geográfica** desde donde se crea la tarea. Útil para 
 
 ---
 
-### 🔔 Notificaciones Locales (`expo-notifications`)
+### 3. 🔔 Notificaciones Locales (`expo-notifications`)
 
 Implementa un sistema de **recordatorios programados** vinculados al ciclo de vida de cada tarea.
 
@@ -481,7 +481,7 @@ Implementa un sistema de **recordatorios programados** vinculados al ciclo de vi
 
 ---
 
-## 🔐 Gestión de Permisos — Avance 3
+## 🔐 Gestión de Permisos — Avance 3 (Semana 15)
 
 Todos los permisos se gestionan de forma centralizada a través de `src/utils/permissions.js`, que distingue tres estados posibles:
 
@@ -506,7 +506,7 @@ Todos los permisos se gestionan de forma centralizada a través de `src/utils/pe
 
 ---
 
-## ⚡ Rendimiento y Calidad de Código — Avance 3
+## ⚡ Rendimiento y Calidad de Código — Avance 3 (Semana 15)
 
 ### Sistema de Logging (`src/utils/logger.js`)
 
@@ -583,6 +583,7 @@ Capa de seguridad que envuelve toda la app en `App.jsx`. Si un componente lanza 
 | **Avance 1** | Estructura, interfaz, navegación, formularios con validaciones | ✅ Completado |
 | **Avance 2** | Hooks, consumo de APIs, persistencia con AsyncStorage, autenticación local | ✅ Completado |
 | **Avance 3** | Funcionalidades nativas (cámara, GPS, notificaciones), gestión de permisos, rendimiento y logging | ✅ Completado |
+| **Avance Final** | (Todavía no hay tareas asignadas) | 🔜 Pendiente |
 
 ---
 
@@ -614,6 +615,10 @@ A continuación se muestran las principales vistas de la aplicación **KronoTask
   <img src="./assets/images/home.png" width="300" />
 </p>
 
+<p align="center">
+  <img src="./assets/images/home1.png" width="300" />
+</p>
+
 ---
 
 ### ✏️ Pantalla de creación de tarea
@@ -622,12 +627,20 @@ A continuación se muestran las principales vistas de la aplicación **KronoTask
   <img src="./assets/images/crearTarea.png" width="300" />
 </p>
 
+<p align="center">
+  <img src="./assets/images/crearTarea1.png" width="300" />
+</p>
+
 ---
 
 ### 🔍 Pantalla de detalle de tarea
 
 <p align="center">
   <img src="./assets/images/detalleTarea.png" width="300" />
+</p>
+
+<p align="center">
+  <img src="./assets/images/detalleTarea1.png" width="300" />
 </p>
 
 ---
