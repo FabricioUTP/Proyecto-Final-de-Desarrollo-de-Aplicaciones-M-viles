@@ -1,5 +1,5 @@
 // src/screens/HomeScreen.jsx
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import {
   ActivityIndicator,
   Animated,
@@ -69,6 +69,17 @@ const HomeScreen = ({ navigation }) => {
   const completedTasks = useMemo(() => tasks.filter((t) => t.status === "completed").length, [tasks]);
   const pendingTasks   = useMemo(() => tasks.filter((t) => t.status === "pending").length,   [tasks]);
   const progressPct    = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
+  const keyExtractor = useCallback((item) => item.id, []);
+  const renderItem   = useCallback(({ item, index }) => (
+    <TaskCard
+      task={item}
+      priorityConfig={PRIORITY_CONFIG}
+      onPress={() => navigation.navigate("TaskDetail", { taskId: item.id })}
+      onToggle={() => toggleTaskStatus(item.id)}
+      index={index}
+    />
+  ), [filteredTasks]);
 
   // ── Barra de progreso animada ─────────────────────────────
   const progressAnim = useRef(new Animated.Value(0)).current;
@@ -234,7 +245,7 @@ const HomeScreen = ({ navigation }) => {
 
       <FlatList
         data={filteredTasks}
-        keyExtractor={(item) => item.id}
+        keyExtractor={keyExtractor}
         ListHeaderComponent={
           <>
             {renderHeader()}
@@ -250,19 +261,14 @@ const HomeScreen = ({ navigation }) => {
             </View>
           </>
         }
-        renderItem={({ item, index }) => (
-          <TaskCard
-            task={item}
-            priorityConfig={PRIORITY_CONFIG}
-            onPress={() => navigation.navigate("TaskDetail", { taskId: item.id })}
-            onToggle={() => toggleTaskStatus(item.id)}
-            index={index}
-          />
-        )}
+        renderItem={renderItem}
         ItemSeparatorComponent={() => <View style={{ height: 2 }} />}
         ListEmptyComponent={renderEmpty}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
+        removeClippedSubviews={true}
+        maxToRenderPerBatch={10}
+        windowSize={5}
       />
 
       {/* FAB */}

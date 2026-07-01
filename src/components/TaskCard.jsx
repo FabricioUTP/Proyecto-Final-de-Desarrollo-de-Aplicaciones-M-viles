@@ -8,6 +8,10 @@ import {
 } from "react-native";
 import { colors } from "../theme/colors";
 
+// React.memo evita que TaskCard se re-renderice cuando el componente
+// padre (HomeScreen) actualiza estado no relacionado con esta tarea.
+// Solo se vuelve a renderizar si cambian sus props (task, onPress, etc.).
+
 const CATEGORY_ICONS = {
   Comercial:  "💼",
   Diseño:     "🎨",
@@ -352,4 +356,4 @@ const styles = StyleSheet.create({
 
 });
 
-export default TaskCard;
+export default React.memo(TaskCard);

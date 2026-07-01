@@ -4,6 +4,7 @@ import {
   Animated,
   Button,
   Image,
+  Linking,
   Platform,
   ScrollView,
   StatusBar,
@@ -211,6 +212,60 @@ const TaskDetailScreen = ({ route, navigation }) => {
             </View>
           </View>
 
+          {/* Foto de evidencia */}
+          {task.photoUri ? (
+            <View style={styles.section}>
+              <Text style={styles.sectionLabel}>📷 Foto de evidencia</Text>
+              <Image source={{ uri: task.photoUri }} style={styles.evidencePhoto} />
+            </View>
+          ) : null}
+
+          {/* Ubicación */}
+          {task.location ? (
+            <View style={styles.section}>
+              <Text style={styles.sectionLabel}>📍 Ubicación</Text>
+              <TouchableOpacity
+                style={styles.locationDetailCard}
+                activeOpacity={0.8}
+                onPress={() => {
+                  const { latitude, longitude } = task.location;
+                  const url = Platform.select({
+                    ios: `maps:0,0?q=${latitude},${longitude}`,
+                    android: `geo:0,0?q=${latitude},${longitude}`,
+                  });
+                  Linking.openURL(url).catch(() => {});
+                }}
+              >
+                <Text style={styles.metaValue}>
+                  {task.location.address ||
+                    `${task.location.latitude.toFixed(5)}, ${task.location.longitude.toFixed(5)}`}
+                </Text>
+                <Text style={styles.locationLinkText}>Abrir en mapas ↗</Text>
+              </TouchableOpacity>
+            </View>
+          ) : null}
+
+          {/* Recordatorio programado */}
+          {task.reminderAt ? (
+            <View style={styles.section}>
+              <Text style={styles.sectionLabel}>🔔 Recordatorio</Text>
+              <View style={styles.locationDetailCard}>
+                <Text style={styles.metaValue}>
+                  {new Date(task.reminderAt).toLocaleString("es-PE", {
+                    weekday: "long",
+                    day: "numeric",
+                    month: "long",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </Text>
+                {task.status !== "completed" && (
+                  <Text style={styles.reminderActiveText}>Pendiente de disparar</Text>
+                )}
+              </View>
+            </View>
+          ) : null}
+
           {/* Barra de estado visual */}
           <View style={styles.statusBar}>
             <View style={[styles.statusStep, { backgroundColor: colors.primary }]}>
@@ -272,6 +327,14 @@ const TaskDetailScreen = ({ route, navigation }) => {
 
 // ── ESTILOS ──────────────────────────────────────────────
 const styles = StyleSheet.create({
+  evidencePhoto: { width: "100%", height: 200, borderRadius: 14, backgroundColor: colors.surface },
+  locationDetailCard: {
+    padding: 14, borderRadius: 12,
+    borderWidth: 1.5, borderColor: colors.border,
+    backgroundColor: colors.surface,
+  },
+  locationLinkText: { marginTop: 6, fontSize: 13, color: colors.primary, fontWeight: "700" },
+  reminderActiveText: { marginTop: 6, fontSize: 12, color: colors.textSecondary, fontStyle: "italic" },
 
   root: {
     flex: 1,

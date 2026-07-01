@@ -12,6 +12,8 @@ import {
   useState,
 } from "react";
 import { formatError } from "../utils/error";
+import { cancelTaskReminder, notifyTaskCompleted } from "../utils/notifications";
+import Logger from "../utils/logger";
 import {
   normalizeString,
   normalizeTask,
@@ -108,19 +110,19 @@ const TaskProvider = ({ children }) => {
           const parsed = JSON.parse(stored);
           const normalizedTasks = normalizeTaskList(parsed);
           setTasks(normalizedTasks);
-
+          Logger.info("TaskContext", "Tareas cargadas desde storage", { count: normalizedTasks.length, userId });
         } else {
           const defaultTasks = currentUser?.isAdmin ? INITIAL_TASKS : [];
           const normalizedTasks = normalizeTaskList(defaultTasks);
-          await AsyncStorage.setItem(
-            storageKey,
-            JSON.stringify(defaultTasks)
-          );
+          await AsyncStorage.setItem(storageKey, JSON.stringify(defaultTasks));
           setTasks(normalizedTasks);
+          Logger.info("TaskContext", "Storage vacío — tareas iniciales cargadas", { count: normalizedTasks.length, userId });
         }
       } catch (err) {
         if (!cancelled) {
-          setStorageError(formatError(err).message);
+          const msg = formatError(err).message;
+          Logger.error("TaskContext", "Error al cargar tareas", { error: msg, userId });
+          setStorageError(msg);
           setTasks(normalizeTaskList(INITIAL_TASKS));
         }
       } finally { 
@@ -146,8 +148,11 @@ const TaskProvider = ({ children }) => {
       try {
         const normalizedTasks = normalizeTaskList(tasks);
         await AsyncStorage.setItem(storageKey, JSON.stringify(normalizedTasks));
+        Logger.debug("TaskContext", "Tareas guardadas", { count: normalizedTasks.length });
       } catch (err) {
-        setStorageError(formatError(err).message);
+        const msg = formatError(err).message;
+        Logger.error("TaskContext", "Error al guardar tareas", { error: msg });
+        setStorageError(msg);
       }
     };
 
@@ -157,10 +162,13 @@ const TaskProvider = ({ children }) => {
   // ── CRUD de tareas ────────────────────────────────────────
   
   const addTask = useCallback((task) => {
-    setTasks((prev) => [normalizeTask(task), ...prev]);
+    const normalized = normalizeTask(task);
+    Logger.info("TaskContext", "Tarea creada", { id: normalized.id, title: normalized.title });
+    setTasks((prev) => [normalized, ...prev]);
   }, []);
   
   const updateTask = useCallback((updatedTask) => {
+    Logger.info("TaskContext", "Tarea actualizada", { id: updatedTask.id });
     setTasks((prev) =>
       prev.map((t) =>
         t.id === updatedTask.id ? normalizeTask({ ...t, ...updatedTask }) : t
@@ -169,16 +177,28 @@ const TaskProvider = ({ children }) => {
   }, []);
   
   const removeTask = useCallback((taskId) => {
-    setTasks((prev) => prev.filter((t) => t.id !== taskId));
+    setTasks((prev) => {
+      const task = prev.find((t) => t.id === taskId);
+      if (task?.notificationId) cancelTaskReminder(task.notificationId);
+      Logger.info("TaskContext", "Tarea eliminada", { id: taskId });
+      return prev.filter((t) => t.id !== taskId);
+    });
   }, []);
   
   const toggleTaskStatus = useCallback((taskId) => {
     setTasks((prev) =>
-      prev.map((t) =>
-        t.id === taskId
-          ? { ...t, status: t.status === "completed" ? "pending" : "completed" }
-          : t
-      )
+      prev.map((t) => {
+        if (t.id !== taskId) return t;
+        const isCompletingNow = t.status !== "completed";
+        if (isCompletingNow) {
+          if (t.notificationId) cancelTaskReminder(t.notificationId);
+          notifyTaskCompleted(t);
+          Logger.info("TaskContext", "Tarea completada", { id: taskId, title: t.title });
+          return { ...t, status: "completed", notificationId: "" };
+        }
+        Logger.info("TaskContext", "Tarea reabierta", { id: taskId });
+        return { ...t, status: "pending" };
+      })
     );
   }, []);
   
@@ -216,5 +236,4 @@ const useTasks = () => {
   return context;
 };
 
-export { TaskProvider, useTasks };
-
+export { TaskProvider, useTasks }

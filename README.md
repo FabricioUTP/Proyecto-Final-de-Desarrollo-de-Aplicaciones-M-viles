@@ -24,8 +24,8 @@ Desarrollada con **React Native** y **Expo**, la aplicación implementa buenas p
 
 | # | Nombre Completo | Rol |
 |---|---|---|
-| 1 | Fabricio Manuel Munives Santamaría | Desarrollador Mobile / Frontend / Backend / DB|
-| 2 | Elmer Diego Falla Samaniego | Desarrollador Mobile / Frontend / Backend / DB|
+| 1 | Fabricio Manuel Munives Santamaría | Desarrollador Mobile / Frontend / Backend / DB |
+| 2 | Elmer Diego Falla Samaniego | Desarrollador Mobile / Frontend / Backend / DB |
 
 ---
 
@@ -53,12 +53,16 @@ La paleta fue seleccionada para transmitir profesionalismo, claridad visual y bu
 | Tecnología | Versión | Descripción |
 |---|---|---|
 | **React Native** | 0.76+ | Framework principal para desarrollo móvil multiplataforma |
-| **Expo** | SDK 52+ | Entorno de desarrollo y herramienta de build |
+| **Expo** | SDK 54+ | Entorno de desarrollo y herramienta de build |
 | **JavaScript (ES6+)** | — | Lenguaje principal de programación |
 | **JSX** | — | Extensión de sintaxis para la definición de interfaces |
 | **CSS-in-JS (StyleSheet)** | — | Estilos mediante la API nativa de React Native |
 | **React Navigation** | v6 | Navegación entre pantallas |
 | **AsyncStorage** | 2.1+ | Persistencia de datos local por usuario |
+| **expo-image-picker** | — | Acceso a cámara y galería del dispositivo |
+| **expo-location** | — | Acceso al GPS y geocodificación inversa |
+| **expo-notifications** | — | Notificaciones locales programadas |
+| **expo-device** | — | Detección de dispositivo físico vs. emulador |
 | **Random User API** | — | API pública para directorio del equipo con fotos reales |
 | **JSONPlaceholder API** | — | API pública para tareas asignadas por miembro |
 
@@ -69,7 +73,8 @@ La paleta fue seleccionada para transmitir profesionalismo, claridad visual y bu
 | Herramienta | Descripción |
 |---|---|
 | **Visual Studio Code** | Editor de código principal |
-| **Expo Go** | App para previsualización en dispositivo físico |
+| **Expo Go** | App para previsualización en dispositivo físico (Avances 1 y 2) |
+| **Development Build** | Build nativo generado con `npx expo run:android` (Avance 3) |
 | **Android Emulator** | Emulador de dispositivo Android (Android Studio) |
 | **Git + GitHub** | Control de versiones y repositorio remoto |
 | **Node.js** | Entorno de ejecución necesario para Expo y npm |
@@ -88,7 +93,7 @@ La paleta fue seleccionada para transmitir profesionalismo, claridad visual y bu
 
 ---
 
-## 📁 Estructura del Proyecto (Segundo Avance)
+## 📁 Estructura del Proyecto (Tercer Avance)
 
 ```
 KronoTask/
@@ -98,12 +103,13 @@ KronoTask/
 │
 ├── src/
 │   ├── components/                   # Componentes reutilizables
-│   │   ├── TaskCard.jsx              # Tarjeta de tarea con props
+│   │   ├── ErrorBoundary.jsx         # ★ NUEVO — Captura errores de render globales
+│   │   ├── TaskCard.jsx              # Tarjeta de tarea (optimizada con React.memo)
 │   │   └── UserMenuButton.jsx        # Avatar con menú desplegable de sesión
 │   │
 │   ├── context/                      # Estado global de la aplicación
-│   │   ├── AuthContext.jsx           # Autenticación: login, registro y sesión
-│   │   └── TaskContext.jsx           # Tareas con persistencia por usuario
+│   │   ├── AuthContext.jsx           # Autenticación con logging integrado
+│   │   └── TaskContext.jsx           # Tareas con notificaciones y logging
 │   │
 │   ├── hooks/                        # Hooks personalizados
 │   │   └── useApi.js                 # Hook para consumo de APIs con loading/error/data
@@ -114,23 +120,27 @@ KronoTask/
 │   ├── screens/                      # Pantallas de la aplicación
 │   │   ├── LoginScreen.jsx           # Pantalla de inicio de sesión
 │   │   ├── CreateAccountScreen.jsx   # Pantalla de registro de usuario
-│   │   ├── HomeScreen.jsx            # Dashboard principal con lista de tareas
-│   │   ├── CreateTaskScreen.jsx      # Formulario para crear nueva tarea
-│   │   ├── TaskDetailScreen.jsx      # Detalle y gestión de una tarea
+│   │   ├── HomeScreen.jsx            # Dashboard principal (FlatList optimizada)
+│   │   ├── CreateTaskScreen.jsx      # ★ ACTUALIZADO — Cámara, GPS y recordatorio
+│   │   ├── TaskDetailScreen.jsx      # ★ ACTUALIZADO — Muestra foto, ubicación y recordatorio
 │   │   └── TeamScreen.jsx            # Directorio del equipo (Random User API)
 │   │
 │   ├── services/                     # Capa de servicios externos
-│   │   └── api.js                    # Random User API + JSONPlaceholder
+│   │   └── api.js                    # Random User API + JSONPlaceholder con logging
 │   │
 │   ├── theme/                        # Estilos y tokens globales
-│   │    └── colors.js                 # Paleta de colores centralizada
+│   │   └── colors.js                 # Paleta de colores centralizada
 │   │
-│   └── utils/                        # Capa de lógica de componentes
+│   └── utils/                        # Utilidades y lógica transversal
+│       ├── device.js                 # ★ NUEVO — Helpers de cámara, galería y GPS
 │       ├── error.js                  # Lógica de manejo de errores
-│       └── normalize.js              # Lógica de normalización
+│       ├── logger.js                 # ★ NUEVO — Sistema de logging centralizado
+│       ├── normalize.js              # Normalización de datos (extendido con campos nativos)
+│       ├── notifications.js          # ★ NUEVO — Notificaciones locales programadas
+│       └── permissions.js            # ★ NUEVO — Gestión centralizada de permisos
 │
-├── App.jsx                           # Punto de entrada con AuthProvider + TaskProvider
-├── app.json                          # Configuración de Expo
+├── App.jsx                           # Punto de entrada con ErrorBoundary + Providers
+├── app.json                          # Configuración de Expo (plugins nativos incluidos)
 ├── package.json                      # Dependencias del proyecto
 └── README.md                         # Documentación del proyecto
 ```
@@ -146,6 +156,7 @@ Asegúrate de tener instalados los siguientes programas antes de continuar:
 - [Node.js](https://nodejs.org/) (versión LTS recomendada, 18+)
 - [Visual Studio Code](https://code.visualstudio.com/)
 - [Git](https://git-scm.com/)
+- [Android Studio](https://developer.android.com/studio) con SDK de Android 12+ instalado
 - Cuenta en [Expo](https://expo.dev/) (gratuita)
 - App **Expo Go** instalada en tu dispositivo móvil
 
@@ -207,7 +218,25 @@ npx expo install @react-native-async-storage/async-storage
 
 ---
 
-### Paso 6 — Ejecutar la aplicación
+### Paso 6 — Instalar dependencias del Avance 3 (funcionalidades nativas)
+
+```bash
+# Cámara y galería
+npx expo install expo-image-picker
+
+# GPS y geocodificación inversa
+npx expo install expo-location
+
+# Notificaciones locales
+npx expo install expo-notifications
+
+# Detección de dispositivo físico
+npx expo install expo-device
+```
+
+---
+
+### Paso 7 — Ejecutar la aplicación
 
 ```bash
 npx expo start
@@ -221,6 +250,34 @@ Luego elige una de las siguientes opciones en la terminal:
 | `i` | Abrir en simulador iOS (solo Mac) |
 | `w` | Abrir en navegador web |
 | Escanear QR | Visualizar en dispositivo físico con Expo Go |
+
+---
+
+### Paso 8 (opcional) — Generar el build nativo (requerido para el Avance 3) 
+
+A partir del Avance 3, la app utiliza funcionalidades nativas del dispositivo (cámara, GPS, notificaciones) que requieren un **development build** en lugar de Expo Go.
+
+```bash
+# Generar la carpeta android/ con código nativo
+npx expo prebuild --platform android
+
+# Compilar e instalar en el dispositivo o emulador
+npx expo run:android
+```
+
+> **Nota:** La primera compilación puede tardar entre 5 y 15 minutos porque Gradle descarga todas las dependencias nativas.
+
+---
+
+### Paso 9 (opcional) — Ejecutar en modo desarrollo (tras el primer build)
+
+Una vez instalada la APK, para continuar el desarrollo con hot reload:
+
+```bash
+npx expo start --dev-client
+```
+
+Abre la app **KronoTask** en tu dispositivo (no Expo Go) y se conectará automáticamente al servidor de desarrollo.
 
 ---
 
@@ -240,7 +297,7 @@ Este segundo avance cuenta con **6 pantallas** funcionales, autenticación local
 ---
 
 ### 1. 🔐 Pantalla de login
-**Archivo:** `src/screens/LoginScreen.js`
+**Archivo:** `src/screens/LoginScreen.jsx`
 
 Pantalla de inicio de sesión con validación de credenciales contra AsyncStorage.
 
@@ -265,7 +322,7 @@ Formulario de registro empresarial que guarda el usuario en AsyncStorage.
 |---|---|
 | Campos | Nombre completo, cargo en la empresa, correo corporativo, contraseña y confirmar contraseña |
 | Validaciones | Campos obligatorios, solo letras en nombre, formato de email, mínimo 6 caracteres, al menos 1 mayúscula y 1 número, coincidencia de contraseñas |
-| Persistencia | Usuario guardado en AsyncStorage con clave `@kronotask_users` |
+| Persistencia | Usuario guardado en AsyncStorage con clave `@kronotask_registered_users` |
 | Retroalimentación | Indicador de requisitos en tiempo real, confirmación verde al coincidir contraseñas, banner de error si el correo ya existe |
 | Animaciones | Shake al error, pantalla de éxito animada al crear cuenta |
 | Show/hide | Botón para mostrar u ocultar contraseña en ambos campos |
@@ -275,7 +332,7 @@ Formulario de registro empresarial que guarda el usuario en AsyncStorage.
 ---
 
 ### 3. 🏠 Pantalla principal (Dashboard)
-**Archivo:** `src/screens/HomeScreen.js`
+**Archivo:** `src/screens/HomeScreen.jsx`
 
 Panel principal con tareas persistidas por usuario y acceso al directorio del equipo.
 
@@ -283,7 +340,7 @@ Panel principal con tareas persistidas por usuario y acceso al directorio del eq
 |---|---|
 | Barra superior | Logo y nombre de la app a la izquierda, avatar con menú desplegable a la derecha |
 | Menú de usuario | Al tocar el avatar aparece dropdown con info del usuario y opción de cerrar sesión |
-| Lista dinámica | Renderizada con `FlatList`, tareas cargadas desde AsyncStorage |
+| Lista dinámica | Renderizada con `FlatList` optimizada (`removeClippedSubviews`, `maxToRenderPerBatch`, `windowSize`) |
 | Filtros | Todas / Pendientes / Completadas |
 | Estadísticas | Cards con total, pendientes y completadas por usuario |
 | Progreso | Barra animada con porcentaje de tareas completadas |
@@ -293,39 +350,46 @@ Panel principal con tareas persistidas por usuario y acceso al directorio del eq
 
 ---
 
-### 4. ✏️ Pantalla de crear tarea
-**Archivo:** `src/screens/CreateTaskScreen.js`
+### 4. ✏️ Pantalla de crear / editar tarea ★ Actualizada en Avance 3
+**Archivo:** `src/screens/CreateTaskScreen.jsx`
 
-Formulario interactivo para registrar nuevas tareas persistidas automáticamente en AsyncStorage.
+Formulario interactivo para registrar nuevas tareas. En el Avance 3 se incorporaron tres secciones de funcionalidades nativas del dispositivo.
 
 | Elemento | Detalle |
 |---|---|
-| Campos | Título (máx. 80 caracteres) y descripción (máx. 300 caracteres) |
+| Campos base | Título (máx. 80 caracteres) y descripción (máx. 300 caracteres) |
 | Validaciones | Campos obligatorios, mínimo 5 caracteres en título y 10 en descripción |
 | Categoría | Selector visual: 💼 Comercial / 🎨 Diseño / 💻 Desarrollo / 📊 Gestión / 📣 Marketing / 🛠️ Soporte |
 | Prioridad | Selector visual: 🔴 Alta / 🟡 Media / 🟢 Baja |
+| 📷 Foto de evidencia | Botones "Tomar foto" (cámara) y "Galería" con preview de imagen y opción de quitar |
+| 📍 Ubicación GPS | Registra la posición actual con geocodificación inversa (dirección legible) |
+| 🔔 Recordatorio | Campo numérico + desplegable de unidad (segundos / minutos / horas / días); valida en tiempo real |
 | Vista previa | Previsualización en tiempo real de la tarea mientras se escribe |
 | Animaciones | Shake al error, animación de entrada del formulario, botón animado |
-| Persistencia | Tarea guardada automáticamente en AsyncStorage del usuario activo |
-| Componentes | `TextInput`, `TouchableOpacity`, `ScrollView`, `KeyboardAvoidingView`, `Image`, `Animated` |
+| Persistencia | Foto, ubicación, recordatorio, `reminderValue` y `reminderUnit` guardados junto con la tarea |
+| Componentes | `TextInput`, `TouchableOpacity`, `ScrollView`, `KeyboardAvoidingView`, `Image`, `Animated`, `ActivityIndicator` |
+
 
 ---
 
-### 5. 🔍 Pantalla de detalle de tarea
-**Archivo:** `src/screens/TaskDetailScreen.js`
+### 5. 🔍 Pantalla de detalle de tarea ★ Actualizada en Avance 3
+**Archivo:** `src/screens/TaskDetailScreen.jsx`
 
-Vista detallada de una tarea. Cambios de estado se sincronizan automáticamente con AsyncStorage.
+Vista detallada de una tarea. En el Avance 3 se agregaron secciones para mostrar la evidencia fotográfica, la ubicación y el recordatorio programado.
 
 | Elemento | Detalle |
 |---|---|
 | Información | Título, descripción, estado, prioridad, categoría y fecha de creación |
 | Header dinámico | Cambia de color índigo a verde según el estado de la tarea |
 | Metadatos | Cards con prioridad, fecha de creación y categoría |
+| 📷 Foto de evidencia | Muestra la imagen adjunta a tamaño completo si existe |
+| 📍 Ubicación | Muestra la dirección registrada con botón para abrir en Google/Apple Maps |
+| 🔔 Recordatorio | Muestra la fecha y hora programada; indica si está pendiente de disparar |
 | Barra de estado | Indicador visual del flujo: Creada → En curso / Completada |
-| Acciones | Marcar como completada / pendiente (`TouchableOpacity`) y eliminar tarea (`Button`) |
+| Acciones | Marcar como completada / pendiente (cancela el recordatorio automáticamente) y eliminar |
 | Persistencia | Cambios de estado y eliminación sincronizados con AsyncStorage |
 | Animaciones | Fade + slide de entrada, animación del botón de acción, header animado según estado |
-| Componentes | `ScrollView`, `TouchableOpacity`, `Button`, `Image`, `Animated`, `Alert` |
+| Componentes | `ScrollView`, `TouchableOpacity`, `Button`, `Image`, `Animated`, `Alert`, `Linking` |
 
 ---
 
@@ -365,6 +429,121 @@ HomeScreen (avatar) ──▶ Menú desplegable ──▶ Cerrar sesión ──�
 ```
 
 ---
+## 📱 Funcionalidades Nativas — Avance 3 (Semana 15)
+
+El Avance 3 incorpora integración directa con el hardware del dispositivo a través de tres funcionalidades nativas conectadas al flujo de gestión de tareas.
+
+---
+
+### 📷 Cámara y Galería (`expo-image-picker`)
+
+Permite adjuntar una **foto de evidencia** a cualquier tarea, siguiendo el flujo habitual de un entorno empresarial donde los colaboradores documentan el resultado de su trabajo con imágenes.
+
+| Aspecto | Detalle |
+|---|---|
+| Fuente | Cámara del dispositivo o galería de fotos |
+| Calidad | Comprimida al 60% para no saturar el almacenamiento local |
+| Relación de aspecto | 4:3, con recorte asistido habilitado |
+| Preview | Imagen visible en el formulario antes de guardar |
+| Persistencia | URI guardado en el campo `photoUri` de la tarea |
+| Visualización | Mostrada en `TaskDetailScreen` al consultar el detalle |
+
+---
+
+### 📍 GPS y Geocodificación Inversa (`expo-location`)
+
+Registra la **ubicación geográfica** desde donde se crea la tarea. Útil para equipos de campo (técnicos, vendedores, inspectores) que trabajan en distintas sedes o ubicaciones.
+
+| Aspecto | Detalle |
+|---|---|
+| Precisión | `Accuracy.Balanced` — equilibrio entre exactitud y consumo de batería |
+| Geocodificación | Convierte las coordenadas en una dirección legible (calle, distrito, ciudad) |
+| Fallback | Si no hay conexión para el geocoder, muestra las coordenadas directamente |
+| Persistencia | Objeto `{ latitude, longitude, address }` guardado en la tarea |
+| Visualización | Dirección mostrada en `TaskDetailScreen` con botón que abre Google/Apple Maps |
+
+---
+
+### 🔔 Notificaciones Locales (`expo-notifications`)
+
+Implementa un sistema de **recordatorios programados** vinculados al ciclo de vida de cada tarea.
+
+| Evento | Comportamiento |
+|---|---|
+| Crear tarea con recordatorio | Se programa una notificación local en la fecha calculada |
+| Completar tarea | El recordatorio se cancela automáticamente y se dispara una notificación de confirmación inmediata |
+| Eliminar tarea | El recordatorio pendiente se cancela para no dejar notificaciones huérfanas |
+| Editar tarea | El recordatorio anterior se cancela y se reprograma con los nuevos valores |
+
+**Selección del recordatorio:** campo numérico libre (1–9999) con desplegable de unidad (Segundos / Minutos / Horas / Días). Validación en tiempo real con bloqueo del botón guardar ante valores inválidos.
+
+> **Nota técnica:** KronoTask utiliza exclusivamente **notificaciones locales** (programadas en el propio dispositivo), no notificaciones remotas push. Esto es intencional: no se requiere servidor externo ni API key, y funciona sin conexión a internet.
+
+---
+
+## 🔐 Gestión de Permisos — Avance 3
+
+Todos los permisos se gestionan de forma centralizada a través de `src/utils/permissions.js`, que distingue tres estados posibles:
+
+| Estado | Descripción | Comportamiento en la app |
+|---|---|---|
+| `granted` | El usuario concedió el permiso | La funcionalidad se ejecuta normalmente |
+| `denied` | El usuario rechazó pero puede volver a pedir | Alert informativo invitando a intentar de nuevo |
+| `blocked` | El usuario rechazó de forma permanente | Alert con botón **"Abrir Ajustes"** que lleva directamente a la configuración del sistema |
+
+### Permisos requeridos
+
+| Permiso | Cuándo se solicita | Plataforma |
+|---|---|---|
+| `CAMERA` | Al tocar "Tomar foto" por primera vez | Android / iOS |
+| `MEDIA_LIBRARY` | Al tocar "Galería" por primera vez | Android / iOS |
+| `ACCESS_FINE_LOCATION` | Al tocar "Usar ubicación actual" | Android |
+| `ACCESS_COARSE_LOCATION` | Al tocar "Usar ubicación actual" | Android |
+| `POST_NOTIFICATIONS` | Al programar el primer recordatorio | Android 13+ |
+| `NSCameraUsageDescription` | Al tocar "Tomar foto" por primera vez | iOS |
+| `NSPhotoLibraryUsageDescription` | Al tocar "Galería" por primera vez | iOS |
+| `NSLocationWhenInUseUsageDescription` | Al tocar "Usar ubicación actual" | iOS |
+
+---
+
+## ⚡ Rendimiento y Calidad de Código — Avance 3
+
+### Sistema de Logging (`src/utils/logger.js`)
+
+Logger centralizado con cuatro niveles de severidad. En desarrollo imprime en consola con el contexto del módulo de origen. Mantiene un buffer de los últimos 100 eventos en memoria que se limpia automáticamente al cerrar sesión.
+
+| Nivel | Uso |
+|---|---|
+| `INFO` | Eventos normales: login exitoso, tarea creada, carga desde storage |
+| `WARN` | Situaciones esperadas pero anómalas: credenciales incorrectas, permiso denegado |
+| `ERROR` | Fallos reales: error de red, fallo en AsyncStorage, crash de notificación |
+| `DEBUG` | Trazas de desarrollo: inicio/fin de peticiones API, guardado de tareas |
+
+**Puntos de logging implementados:**
+
+- `AuthContext` — login, registro, restauración de sesión y logout
+- `TaskContext` — carga/guardado de storage y cada operación CRUD
+- `api.js` — inicio, éxito y fallo de cada petición a las APIs externas
+- `ErrorBoundary` — captura y registra cualquier crash de render
+
+### Error Boundary (`src/components/ErrorBoundary.jsx`)
+
+Capa de seguridad que envuelve toda la app en `App.jsx`. Si un componente lanza un error durante el render, intercepta el crash, lo registra en el Logger y muestra una pantalla de recuperación con botón "Reintentar" en lugar de una pantalla en blanco.
+
+### Optimizaciones de Rendimiento
+
+| Técnica | Dónde se aplica | Beneficio |
+|---|---|---|
+| `React.memo` | `TaskCard.jsx` | Evita re-renders cuando el padre actualiza estado no relacionado con la tarjeta |
+| `useCallback` | `HomeScreen.jsx` (`keyExtractor`, `renderItem`) | Estabiliza las referencias de función entre renders |
+| `useMemo` | `HomeScreen.jsx` (filtros, contadores) | Recalcula derivados de la lista solo cuando cambia `tasks` |
+| `removeClippedSubviews` | `FlatList` en `HomeScreen` | Libera memoria de items fuera del viewport |
+| `maxToRenderPerBatch={10}` | `FlatList` en `HomeScreen` | Limita los items renderizados por frame |
+| `windowSize={5}` | `FlatList` en `HomeScreen` | Reduce el área de pre-renderizado |
+| `isMounted` ref | `useApi.js` | Evita actualizar el estado de un componente ya desmontado |
+| `cancelToken` pattern | `TaskContext.jsx` | Cancela la carga de storage si el usuario cambia de cuenta antes de que termine |
+
+---
 
 ## 🔌 APIs Externas Consumidas
 
@@ -379,9 +558,21 @@ HomeScreen (avatar) ──▶ Menú desplegable ──▶ Cerrar sesión ──�
 
 | Clave | Contenido | Descripción |
 |---|---|---|
-| `@kronotask_users` | Array de usuarios registrados | Cuentas creadas en la app |
-| `@kronotask_session` | Objeto del usuario activo | Sesión activa (sin contraseña) |
-| `@kronotask_tasks_<userId>` | Array de tareas del usuario | Tareas únicas por cuenta |
+| `@kronotask_registered_users` | Array de usuarios registrados | Cuentas creadas en la app |
+| `@kronotask_current_session` | Objeto del usuario activo | Sesión activa (sin contraseña) |
+| `@kronotask_tasks_<userId>` | Array de tareas del usuario | Tareas únicas por cuenta, incluye `photoUri`, `location`, `reminderAt`, `notificationId`, `reminderValue` y `reminderUnit` |
+
+---
+
+## ⚠️ Limitaciones Conocidas
+
+| Limitación | Descripción |
+|---|---|
+| Notificaciones en Expo Go | A partir del SDK 53, Expo Go eliminó soporte para notificaciones remotas (push). KronoTask usa solo notificaciones **locales**, que sí funcionan. El aviso en consola es informativo y no afecta el funcionamiento. Se recomienda usar un development build (`npx expo run:android`) para evitar el mensaje. |
+| Almacenamiento de fotos | Las fotos se guardan como URI local del dispositivo. Si el usuario desinstala la app o borra la caché, las URIs quedan inválidas. En producción se debería subir las imágenes a un servidor. |
+| GPS en interiores | La precisión del GPS puede reducirse en espacios cerrados. La geocodificación inversa requiere conexión a internet. |
+| Contraseñas en texto plano | Las contraseñas se guardan sin cifrado en AsyncStorage. Es una limitación aceptable para un proyecto académico; en producción se usaría hashing (bcrypt). |
+
 
 ---
 
@@ -391,13 +582,13 @@ HomeScreen (avatar) ──▶ Menú desplegable ──▶ Cerrar sesión ──�
 |---|---|---|
 | **Avance 1** | Estructura, interfaz, navegación, formularios con validaciones | ✅ Completado |
 | **Avance 2** | Hooks, consumo de APIs, persistencia con AsyncStorage, autenticación local | ✅ Completado |
-| **Avance 3** | Aún no especificado | 🔜 Pendiente |
+| **Avance 3** | Funcionalidades nativas (cámara, GPS, notificaciones), gestión de permisos, rendimiento y logging | ✅ Completado |
 
 ---
 
 ## 📸 Capturas de Pantalla
 
-A continuación se muestran las principales vistas de la aplicación **KronoTask**, correspondientes a las pantallas desarrolladas en el Avance 2.
+A continuación se muestran las principales vistas de la aplicación **KronoTask**.
 
 ---
 
@@ -410,6 +601,7 @@ A continuación se muestran las principales vistas de la aplicación **KronoTask
 ---
 
 ### 👤 Pantalla de crear cuenta
+
 <p align="center">
   <img src="./assets/images/crearCuenta.png" width="300" />
 </p>
@@ -451,5 +643,4 @@ A continuación se muestran las principales vistas de la aplicación **KronoTask
 ## 📄 Licencia
 
 Este proyecto fue desarrollado con fines académicos para el curso de Desarrollo de Aplicaciones Móviles.
-
----
+ 

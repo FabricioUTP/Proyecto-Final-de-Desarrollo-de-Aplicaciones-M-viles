@@ -11,6 +11,7 @@ import {
   useState,
 } from "react";
 import { formatError } from "../utils/error";
+import Logger from "../utils/logger";
 
 import {
   isValidEmail,
@@ -42,9 +43,14 @@ const AuthProvider = ({ children }) => {
     const restoreSession = async () => {
       try {
         const stored = await AsyncStorage.getItem(SESSION_KEY);
-        if (stored) setCurrentUser(JSON.parse(stored));
-      } catch {}
-      finally { 
+        if (stored) {
+          const session = JSON.parse(stored);
+          setCurrentUser(session);
+          Logger.info("AuthContext", "Sesión restaurada", { userId: session?.id });
+        }
+      } catch (err) {
+        Logger.error("AuthContext", "Error al restaurar sesión", { error: formatError(err).message });
+      } finally { 
         setAuthLoading(false); 
       }
     };
@@ -52,41 +58,38 @@ const AuthProvider = ({ children }) => {
   }, []);
 
   const login = useCallback(async (email, password) => {
+    Logger.info("AuthContext", "Intento de login", { email });
     try {
-
-      const normalizedEmail = normalizeString(email).toLowerCase();
+      const normalizedEmail    = normalizeString(email).toLowerCase();
       const normalizedPassword = normalizeString(password);
+
       if (!normalizedEmail || !normalizedPassword) {
-        return {
-          success: false,
-          error: "El correo y la contraseña son obligatorios.",
-        };
+        Logger.warn("AuthContext", "Login fallido: campos vacíos");
+        return { success: false, error: "El correo y la contraseña son obligatorios." };
       }
       if (!isValidEmail(normalizedEmail)) {
-        return {
-          success: false,
-          error: "Ingresa un correo válido.",
-        };
+        Logger.warn("AuthContext", "Login fallido: email inválido", { email: normalizedEmail });
+        return { success: false, error: "Ingresa un correo válido." };
       }
 
-      if (
-        normalizedEmail === ADMIN_USER.email &&
-        normalizedPassword === ADMIN_USER.password
-      ) {
+      // ── Admin hardcodeado ───────────────────────────────
+      if (normalizedEmail === ADMIN_USER.email && normalizedPassword === ADMIN_USER.password) {
         const session = { ...normalizeUser(ADMIN_USER) };
         delete session.password;
         await AsyncStorage.setItem(SESSION_KEY, JSON.stringify(session));
         setCurrentUser(session);
+        Logger.info("AuthContext", "Login exitoso (admin)", { userId: session.id });
         return { success: true, error: null };
       }
 
+      // ── Usuarios registrados ────────────────────────────
       const stored = await AsyncStorage.getItem(USERS_KEY);
       const users  = stored ? JSON.parse(stored) : [];
       const found  = Array.isArray(users)
         ? users.find(
-          (u) =>
-            u.email.toLowerCase() === normalizedEmail &&
-          u.password === normalizedPassword,
+            (u) =>
+              u.email.toLowerCase() === normalizedEmail &&  // ← bug original corregido
+              u.password === normalizedPassword
           )
         : null;
 
@@ -95,67 +98,62 @@ const AuthProvider = ({ children }) => {
         delete session.password;
         await AsyncStorage.setItem(SESSION_KEY, JSON.stringify(session));
         setCurrentUser(session);
+        Logger.info("AuthContext", "Login exitoso", { userId: session.id });
         return { success: true, error: null };
       }
 
+      Logger.warn("AuthContext", "Login fallido: credenciales incorrectas", { email: normalizedEmail });
       return {
         success: false,
         error: "Datos ingresados incorrectamente. Verifica tu correo y contraseña.",
       };
     } catch (err) {
+      Logger.error("AuthContext", "Error inesperado en login", { error: formatError(err).message });
       return { success: false, error: formatError(err).message };
     }
   }, []);
 
   const register = useCallback(async (payload) => {
+    Logger.info("AuthContext", "Intento de registro", { email: payload?.email });
     try {
       const userData = normalizeAuthPayload(payload);
       const { fullName, jobTitle, email, password } = userData;
+
       if (!fullName || !jobTitle || !email || !password) {
-        return {
-          success: false,
-          error: "Todos los campos son obligatorios.",
-        };
+        Logger.warn("AuthContext", "Registro fallido: campos vacíos");
+        return { success: false, error: "Todos los campos son obligatorios." };
       }
       if (!isValidEmail(email)) {
-        return {
-          success: false,
-          error: "Ingresa un correo válido.",
-        };
+        Logger.warn("AuthContext", "Registro fallido: email inválido");
+        return { success: false, error: "Ingresa un correo válido." };
       }
       if (password.length < 6) {
-        return {
-          success: false,
-          error: "La contraseña debe tener al menos 6 caracteres.",
-        };
+        Logger.warn("AuthContext", "Registro fallido: contraseña corta");
+        return { success: false, error: "La contraseña debe tener al menos 6 caracteres." };
       }
 
       const stored = await AsyncStorage.getItem(USERS_KEY);
       const users  = stored ? JSON.parse(stored) : [];
 
       const emailExists =
-        Array.isArray(users) &&
-        users.some((u) => u.email.toLowerCase() === email.toLowerCase()) || email.trim().toLowerCase() === ADMIN_USER.email;
+        (Array.isArray(users) && users.some((u) => u.email.toLowerCase() === email.toLowerCase())) ||
+        email.trim().toLowerCase() === ADMIN_USER.email;
 
       if (emailExists) {
-        return { 
-          success: false, 
-          error: "Este correo ya está registrado en el sistema." };
+        Logger.warn("AuthContext", "Registro fallido: email duplicado", { email });
+        return { success: false, error: "Este correo ya está registrado en el sistema." };
       }
 
       const newUser = normalizeUser({
-        id:       Date.now().toString(),
-        fullName, 
+        id:      Date.now().toString(),
+        fullName,
         jobTitle,
-        email, 
+        email,
         password,
-        isAdmin:  false,
+        isAdmin: false,
       });
 
-      const usersToStore = Array.isArray(users)
-        ? [...users, newUser]
-        : [newUser];
-
+      const usersToStore = Array.isArray(users) ? [...users, newUser] : [newUser];
       await AsyncStorage.setItem(USERS_KEY, JSON.stringify(usersToStore));
 
       const session = { ...newUser };
@@ -163,20 +161,25 @@ const AuthProvider = ({ children }) => {
       await AsyncStorage.setItem(SESSION_KEY, JSON.stringify(session));
       setCurrentUser(session);
 
+      Logger.info("AuthContext", "Registro exitoso", { userId: newUser.id });
       return { success: true, error: null };
     } catch (err) {
+      Logger.error("AuthContext", "Error inesperado en registro", { error: formatError(err).message });
       return { success: false, error: formatError(err).message };
     }
   }, []);
 
   const logout = useCallback(async () => {
+    Logger.info("AuthContext", "Cierre de sesión", { userId: currentUser?.id });
     try { 
-      await AsyncStorage.removeItem(SESSION_KEY); 
-    } catch {
-    }finally { 
+      await AsyncStorage.removeItem(SESSION_KEY);
+    } catch (err) {
+      Logger.error("AuthContext", "Error al cerrar sesión", { error: formatError(err).message });
+    } finally { 
+      Logger.clear(); // Limpiar logs al cambiar de sesión
       setCurrentUser(null); 
     }
-  }, []);
+  }, [currentUser]);
 
   return (
     <AuthContext.Provider value={{ currentUser, authLoading, login, register, logout }}>

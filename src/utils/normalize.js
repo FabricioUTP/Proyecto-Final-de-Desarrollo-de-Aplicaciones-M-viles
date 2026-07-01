@@ -34,6 +34,17 @@ export const normalizeCreatedAt = (value) => {
     .replace(/\s+/g, " ");
 };
 
+export const normalizeLocation = (value) => {
+  if (!value || typeof value !== "object") return null;
+  const { latitude, longitude, address } = value;
+  if (typeof latitude !== "number" || typeof longitude !== "number") return null;
+  return {
+    latitude,
+    longitude,
+    address: normalizeString(address, ""),
+  };
+};
+
 export const normalizeTask = (task = {}) => ({
   id: normalizeString(task.id, Date.now().toString()),
   title: normalizeString(task.title, "Tarea sin título"),
@@ -45,6 +56,12 @@ export const normalizeTask = (task = {}) => ({
   priority: normalizePriority(task.priority),
   category: normalizeCategory(task.category),
   createdAt: normalizeCreatedAt(task.createdAt),
+  photoUri: normalizeString(task.photoUri, ""),
+  location: normalizeLocation(task.location),
+  reminderAt: normalizeString(task.reminderAt, ""),
+  notificationId: normalizeString(task.notificationId, ""),
+  reminderValue: normalizeString(task.reminderValue, ""),
+  reminderUnit: normalizeString(task.reminderUnit, "minutes"),
 });
 
 export const normalizeTaskList = (tasks) =>
@@ -72,8 +89,7 @@ export const normalizeUser = (user = {}) => {
     city: normalizeString(user.city, "—"),
     website: normalizeString(user.website, ""),
     initials,
-    isAdmin: typeof user.isAdmin === "boolean" ? user.isAdmin : false,
-    password: normalizeString(user.password)
+    isAdmin: typeof user.isAdmin === "boolean" ? user.isAdmin : false
   };
 };
 
