@@ -89,7 +89,8 @@ export const normalizeUser = (user = {}) => {
     city: normalizeString(user.city, "—"),
     website: normalizeString(user.website, ""),
     initials,
-    isAdmin: typeof user.isAdmin === "boolean" ? user.isAdmin : false
+    isAdmin: typeof user.isAdmin === "boolean" ? user.isAdmin : false,
+    password: normalizeString(user.password, ""),
   };
 };
 
