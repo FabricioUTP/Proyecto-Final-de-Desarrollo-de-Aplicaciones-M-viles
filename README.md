@@ -52,12 +52,12 @@ La paleta fue seleccionada para transmitir profesionalismo, claridad visual y bu
 
 | Tecnología | Versión | Descripción |
 |---|---|---|
-| **React Native** | 0.76+ | Framework principal para desarrollo móvil multiplataforma |
-| **Expo** | SDK 54+ | Entorno de desarrollo y herramienta de build |
+| **React Native** | 0.81 | Framework principal para desarrollo móvil multiplataforma (New Architecture) |
+| **Expo** | SDK 54 | Entorno de desarrollo y herramienta de build |
 | **JavaScript (ES6+)** | — | Lenguaje principal de programación |
 | **JSX** | — | Extensión de sintaxis para la definición de interfaces |
 | **CSS-in-JS (StyleSheet)** | — | Estilos mediante la API nativa de React Native |
-| **React Navigation** | v6 | Navegación entre pantallas |
+| **React Navigation** | v7 | Navegación entre pantallas (Native Stack) |
 | **AsyncStorage** | 2.1+ | Persistencia de datos local por usuario |
 | **expo-image-picker** | — | Acceso a cámara y galería del dispositivo |
 | **expo-location** | — | Acceso al GPS y geocodificación inversa |
@@ -93,11 +93,12 @@ La paleta fue seleccionada para transmitir profesionalismo, claridad visual y bu
 
 ---
 
-## 📁 Estructura del Proyecto (Tercer Avance)
+## 📁 Estructura del Proyecto (Proyecto Final)
 
 ```
 KronoTask/
 │
+├── android/                       # Código nativo generado (development build)
 ├── assets/                        # Recursos estáticos (imágenes, íconos, splash)
 │   └── images/
 │
@@ -142,6 +143,8 @@ KronoTask/
 ├── App.jsx                           # Punto de entrada con ErrorBoundary + Providers
 ├── app.json                          # Configuración de Expo (plugins nativos incluidos)
 ├── package.json                      # Dependencias del proyecto
+├── compilar-android.cmd             # ★ NUEVO — Script de build automatizado (Windows)
+├── DOCUMENTACION-SESION.md          # ★ NUEVO — Bitácora técnica del build nativo
 └── README.md                         # Documentación del proyecto
 ```
 
@@ -185,12 +188,18 @@ expo --version
 
 ---
 
-### Paso 3 — Crear el proyecto con Expo
+### Paso 3 — Clonar el proyecto (o crearlo desde cero con Expo)
 
 ```bash
-npx create-expo-app@latest proyectoApp
-cd proyectoApp
+# Clonar el repositorio existente
+git clone <url-del-repositorio> kronotask
+cd kronotask
+npm install
 ```
+
+> Si se desea recrear la base desde cero: `npx create-expo-app@latest kronotask`
+>
+> **Importante:** en Windows, mantén la carpeta en una ruta corta (ej. `C:\Users\usuario\GitHub\kronotask`). Las rutas largas superan el límite de 260 caracteres y hacen fallar la compilación nativa.
 
 ---
 
@@ -253,7 +262,7 @@ Luego elige una de las siguientes opciones en la terminal:
 
 ---
 
-### Paso 8 (opcional) — Generar el build nativo (requerido para el Avance 3) 
+### Paso 8 — Generar el build nativo (requerido para el Avance 3 y el Proyecto Final)
 
 A partir del Avance 3, la app utiliza funcionalidades nativas del dispositivo (cámara, GPS, notificaciones) que requieren un **development build** en lugar de Expo Go.
 
@@ -265,7 +274,26 @@ npx expo prebuild --platform android
 npx expo run:android
 ```
 
-> **Nota:** La primera compilación puede tardar entre 5 y 15 minutos porque Gradle descarga todas las dependencias nativas.
+> **Nota:** La primera compilación puede tardar entre 5 y 15 minutos porque Gradle descarga todas las dependencias nativas. Las compilaciones posteriores tardan 1–2 minutos.
+
+#### 🚀 Opción rápida en Windows: `compilar-android.cmd`
+
+El repositorio incluye el script **`compilar-android.cmd`** en la raíz, que automatiza todo el flujo de compilación con un doble clic. El script:
+
+1. Configura `ANDROID_HOME`, `JAVA_HOME` y el `PATH` solo para esa ventana (usa el JDK integrado de Android Studio).
+2. Verifica que `adb` y `java` existan antes de empezar.
+3. Detiene daemons de Gradle antiguos y limpia cachés de compilaciones previas.
+4. Verifica el dispositivo conectado (`adb devices`).
+5. Compila e instala con `npx expo run:android`, guardando el log completo en `build-log-k.txt`.
+
+#### ✅ Requisitos del entorno de build
+
+| Requisito | Detalle |
+|---|---|
+| **Android Studio** | Con SDK Platform 34+ y Android SDK Platform-Tools instalados |
+| **Ruta corta** | La carpeta del proyecto debe estar en una ruta corta (ej. `C:\Users\usuario\GitHub\kronotask`). Rutas largas superan el límite de 260 caracteres de Windows y provocan un error de `ninja` |
+| **Teléfono Android** | Con **Depuración USB** e **Instalar vía USB** activados en Opciones de desarrollador |
+| **Variables** | `ANDROID_HOME` apuntando al SDK y `platform-tools` en el `PATH` |
 
 ---
 
@@ -479,6 +507,22 @@ Implementa un sistema de **recordatorios programados** vinculados al ciclo de vi
 
 > **Nota técnica:** KronoTask utiliza exclusivamente **notificaciones locales** (programadas en el propio dispositivo), no notificaciones remotas push. Esto es intencional: no se requiere servidor externo ni API key, y funciona sin conexión a internet.
 
+#### 🔧 Compatibilidad con Expo SDK 52+ (`src/utils/notifications.js`)
+
+El sistema de recordatorios se ajustó a los cambios de la API de `expo-notifications` en las versiones recientes del SDK:
+
+- **Trigger tipado:** desde SDK 52 el disparador debe ser un objeto tipado. Se usa `SchedulableTriggerInputTypes.DATE` con la fecha y el `channelId`, en lugar de pasar un objeto `Date` directo (que dejaba de programar la notificación de forma silenciosa).
+- **Handler actualizado:** desde SDK 53 se emplean `shouldShowBanner` y `shouldShowList` (además de `shouldShowAlert` por compatibilidad) para que la notificación se muestre como banner con la app en primer plano.
+
+```js
+// Programación del recordatorio (forma correcta en SDK 52+)
+trigger: {
+  type: Notifications.SchedulableTriggerInputTypes.DATE,
+  date: fireDate,
+  channelId: "default",
+}
+```
+
 ---
 
 ## 🔐 Gestión de Permisos — Avance 3 (Semana 15)
@@ -572,6 +616,8 @@ Capa de seguridad que envuelve toda la app en `App.jsx`. Si un componente lanza 
 | Almacenamiento de fotos | Las fotos se guardan como URI local del dispositivo. Si el usuario desinstala la app o borra la caché, las URIs quedan inválidas. En producción se debería subir las imágenes a un servidor. |
 | GPS en interiores | La precisión del GPS puede reducirse en espacios cerrados. La geocodificación inversa requiere conexión a internet. |
 | Contraseñas en texto plano | Las contraseñas se guardan sin cifrado en AsyncStorage. Es una limitación aceptable para un proyecto académico; en producción se usaría hashing (bcrypt). |
+| Rutas largas en Windows | La compilación nativa (`ninja`) falla si la ruta del proyecto supera el límite de 260 caracteres de Windows. Solución: mantener la carpeta en una ruta corta como `C:\...\GitHub\kronotask`. |
+| Instalación por USB | Algunos fabricantes (Xiaomi, etc.) bloquean la instalación por USB (`INSTALL_FAILED_USER_RESTRICTED`). Debe activarse **"Instalar vía USB"** en Opciones de desarrollador. |
 
 
 ---
@@ -583,7 +629,34 @@ Capa de seguridad que envuelve toda la app en `App.jsx`. Si un componente lanza 
 | **Avance 1** | Estructura, interfaz, navegación, formularios con validaciones | ✅ Completado |
 | **Avance 2** | Hooks, consumo de APIs, persistencia con AsyncStorage, autenticación local | ✅ Completado |
 | **Avance 3** | Funcionalidades nativas (cámara, GPS, notificaciones), gestión de permisos, rendimiento y logging | ✅ Completado |
-| **Avance Final** | (Todavía no hay tareas asignadas) | 🔜 Pendiente |
+| **Proyecto Final** | Build nativo Android funcionando en dispositivo físico, corrección de notificaciones, limpieza de configuración y dependencias, script de compilación automatizado | ✅ Completado |
+
+---
+
+## 🏗️ Arquitectura General
+
+KronoTask sigue una arquitectura por capas con separación de responsabilidades, pensada para ser mantenible y escalable dentro de un proyecto React Native.
+
+```
+┌──────────────────────────────────────────────────────────┐
+│  Capa de Presentación (screens/ + components/)            │
+│  Pantallas y componentes reutilizables (UI + interacción) │
+├──────────────────────────────────────────────────────────┤
+│  Capa de Estado Global (context/)                         │
+│  AuthContext · TaskContext (estado + lógica de negocio)   │
+├──────────────────────────────────────────────────────────┤
+│  Capa de Lógica y Servicios (hooks/ · services/ · utils/) │
+│  useApi · api.js · notifications · permissions · logger   │
+├──────────────────────────────────────────────────────────┤
+│  Capa de Datos y Sistema                                  │
+│  AsyncStorage (persistencia) · APIs externas · Hardware   │
+│  del dispositivo (cámara, GPS, notificaciones locales)    │
+└──────────────────────────────────────────────────────────┘
+```
+
+**Flujo de datos:** las pantallas consumen el estado global de los *Contexts*, que a su vez orquestan la lógica de negocio apoyándose en la capa de servicios y utilidades. La persistencia (AsyncStorage), el consumo de APIs y el acceso al hardware quedan aislados en la capa inferior, de modo que la UI nunca interactúa directamente con ellos. Un `ErrorBoundary` global envuelve toda la aplicación y un `logger` centralizado registra los eventos relevantes de cada capa.
+
+**Principios aplicados:** separación de responsabilidades, componentes reutilizables (`React.memo`), hooks personalizados para lógica compartida (`useApi`), tokens de diseño centralizados (`theme/colors.js`) y utilidades transversales desacopladas (permisos, notificaciones, normalización de datos).
 
 ---
 
