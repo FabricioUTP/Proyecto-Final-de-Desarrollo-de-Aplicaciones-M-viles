@@ -1,12 +1,22 @@
-import { registerRootComponent } from 'expo';
-import AppNavigator from './src/navigation/AppNavigator';
-import { TaskProvider } from './src/context/TaskContext';
+// App.jsx
+import { registerRootComponent } from "expo";
+import { AuthProvider } from "./src/context/AuthContext";
+import { TaskProvider } from "./src/context/TaskContext";
+import AppNavigator   from "./src/navigation/AppNavigator";
+import { configureNotificationHandler } from "./src/utils/notifications";
+import ErrorBoundary from "./src/components/ErrorBoundary";
+
+configureNotificationHandler();
 
 const App = () => {
   return (
-    <TaskProvider>
-      <AppNavigator />
-    </TaskProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <TaskProvider>
+          <AppNavigator />
+        </TaskProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 };
 
