@@ -1,0 +1,24 @@
+=== Diagnostico autolinking === 
+[node version] 
+v26.4.0
+[where node] 
+C:\Program Files\nodejs\node.exe
+[autolink desde K:\android] 
+K:\node_modules\expo-modules-autolinking\build\commands\autolinkingOptions.js:119
+    throw new Error(`Couldn't find "package.json" up from path "${root}"`);
+          ^
+
+Error: Couldn't find "package.json" up from path "K:\android"
+    at findPackageJsonPathAsync (K:\node_modules\[4mexpo-modules-autolinking[24m\build\commands\autolinkingOptions.js:119:11)
+    at getPackageJsonPath (K:\node_modules\[4mexpo-modules-autolinking[24m\build\commands\autolinkingOptions.js:130:58)
+    at getPackageJson (K:\node_modules\[4mexpo-modules-autolinking[24m\build\commands\autolinkingOptions.js:133:101)
+    at Object.getPlatformOptions (K:\node_modules\[4mexpo-modules-autolinking[24m\build\commands\autolinkingOptions.js:139:39)
+    at Command.<anonymous> (K:\node_modules\[4mexpo-modules-autolinking[24m\build\commands\reactNativeConfigCommand.js:23:64)
+    at Command.listener [as _actionHandler] (K:\node_modules\[4mcommander[24m\index.js:922:31)
+    at Command._parseCommand (K:\node_modules\[4mcommander[24m\index.js:1503:14)
+    at Command._dispatchSubcommand (K:\node_modules\[4mcommander[24m\index.js:1443:18)
+    at Command._parseCommand (K:\node_modules\[4mcommander[24m\index.js:1460:12)
+    at Command.parse (K:\node_modules\[4mcommander[24m\index.js:1292:10)
+
+Node.js v26.4.0
+EXITCODE=0 

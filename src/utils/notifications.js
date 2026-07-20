@@ -14,7 +14,11 @@ export const configureNotificationHandler = () => {
   try {
     Notifications.setNotificationHandler({
       handleNotification: async () => ({
+        // SDK 53+: shouldShowAlert fue reemplazado por Banner/List.
+        // Se mantienen ambos por compatibilidad.
         shouldShowAlert: true,
+        shouldShowBanner: true,
+        shouldShowList: true,
         shouldPlaySound: true,
         shouldSetBadge: false,
       }),
@@ -81,10 +85,17 @@ export const scheduleTaskReminder = async (task, fireDate) => {
         body: task.title,
         data: { taskId: task.id },
       },
-      trigger: fireDate,
+      // SDK 52+: el trigger debe ser un objeto tipado; pasar un Date
+      // directo lanza un error y la notificación nunca se programa.
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.DATE,
+        date: fireDate,
+        channelId: "default",
+      },
     });
     return notificationId;
-  } catch {
+  } catch (error) {
+    console.warn("[notifications] No se pudo programar el recordatorio:", error?.message);
     return null;
   }
 };
